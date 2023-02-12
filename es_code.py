@@ -1,4 +1,3 @@
-
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Document, InnerDoc, Nested, Text, Integer
 from elasticsearch_dsl.connections import connections
@@ -22,7 +21,7 @@ class Video(Document):
 Video.init()
 
 # Charger la dataframe Pandas
-df = pd.DataFrame({0: ['Hogwarts Legacy - Official Launch Trailer 4K', 'Hogwarts Legacy Review', 'Hogwarts Legacy - Before You Buy'],
+df = pd.DataFrame({0: ['Hogwarts Legacy - Official Launch Trailer 4K', 'Hogwarts Legacy Review', "oueoue"],
                 1: ['Hogwarts Legacy', 'IGN', 'gameranx'],
                 2: ['3,2 M de vues', '1,8 M de vues', '1,8 M de vues'],
                 3: ['il y a 6 jours', 'il y a 2 jours', 'il y a 1 jour']})
