@@ -6,6 +6,11 @@
 </head>
 <body>
     <h1>Données YouTube et Twitch</h1>
+    <form>
+      <label for="search">Rechercher : </label>
+      <input type="text" id="search" name="search">
+      <input type="submit" value="Rechercher">
+    </form>
     <table>
         <thead>
             <tr>
@@ -28,5 +33,6 @@
             {% endfor %}
         </tbody>
     </table>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
