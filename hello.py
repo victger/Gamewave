@@ -11,8 +11,8 @@ def index():
         query = request.form['query']
         # field = request.form['field']
         field = request.form.get('field')
-        results = search(query, field)
-        return render_template('hello.html', results=results)
+        data = search(query, field)
+        return render_template('hello.html', data=data)
     else:
         # Recherchez tous les documents dans l'index "yt_twitch"
         result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 1500)
