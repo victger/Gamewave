@@ -15,7 +15,9 @@
     <label><input type="checkbox" name="field" value="Nombre de vues"> Nombre de vues</label>
     <label><input type="checkbox" name="field" value="Date de la mise en ligne"> Date de la mise en ligne</label>
     <br><br>
-    <button name="submit" value="Chercher" onclick="filtrage_mots()"></button>
+    <button name="submit" value="Chercher" onclick="filtrage_mots()">Chercher</button>
+    <!-- <button type="submit" name="sort" value="asc" onclick="tri_ascendant()">Les moins vues</button>
+    <button type="submit" name="sort" value="desc" onclick="tri_descendant()">Les plus vues</button> -->
 
 
     <label for="selection" value="jeu">Sélectionnez un jeu :</label>
@@ -70,9 +72,15 @@
                 checklist+= field.value;
             }
         })
-        console.log("test")
         document.location= "/filtrage_mots?fields="+checklist+"&query="+query
         
+        // function tri_ascendant(){
+        //     document.location= "/tri=asc"
+        // }
+
+        // function tri_descendant(){
+        //     document.location= "/tri=desc"
+        // }
     }
 
 </script>

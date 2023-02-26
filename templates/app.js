@@ -1,5 +1,7 @@
 const searchInput = document.querySelector('#search');
 const rows = document.querySelectorAll('table tbody tr');
+const sortBtns = document.querySelectorAll(".sort-btn");
+
 
 searchInput.addEventListener('keyup', () => {
 	const searchTerm = searchInput.value.toLowerCase().trim();
@@ -14,4 +16,4 @@ searchInput.addEventListener('keyup', () => {
 			row.style.display = 'none';
 		}
 	});
-});
+})
