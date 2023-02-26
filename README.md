@@ -6,7 +6,7 @@ Nous devons ensuite afficher ces données de manière optimale, en utilisant des
 ## Sujet du projet
 Nous avons décidé d'exploiter les données présentes dans les cartes de jeux Youtube comme montré ci-contre :
 
-![Image montrant les cartes de jeux sur Youtube](/images/youtube_card.jpg "Carte de jeu pour le jeu vidéo Apex Legends sur Youtube")
+![Image montrant les cartes de jeux sur Youtube](https://zupimages.net/up/23/08/rph0.png "Carte de jeu pour le jeu vidéo Apex Legends sur Youtube")
 
 . En effet cet onglet permet de recenser les vidéos faites sur un jeu. Nous avons remarqué que cet onglet n'était pas bien optimisé et ne permettait pas de naviguer de façon optimale afin de trouver la vidéo qui correspond le mieux à nôtre besoin. 
 
