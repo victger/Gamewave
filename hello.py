@@ -15,7 +15,7 @@ def index():
         return render_template('hello.html', data=data)
     else:
         # Recherchez tous les documents dans l'index "yt_twitch"
-        result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 1500)
+        result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 2000)
         # Récupérez les documents et les stockez dans une liste
         data = [hit['_source'] for hit in result['hits']['hits']]
         return render_template('hello.html', data=data)
