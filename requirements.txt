@@ -1,0 +1,5 @@
+elasticsearch
+flask
+pandas
+selenium
+webdriver_manager
