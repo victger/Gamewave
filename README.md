@@ -8,7 +8,9 @@ Nous avons décidé d'exploiter les données présentes dans les cartes de jeux 
 
 ![Image montrant les cartes de jeux sur Youtube](https://zupimages.net/up/23/08/rph0.png "Carte de jeu pour le jeu vidéo Apex Legends sur Youtube")
 
-. En effet cet onglet permet de recenser les vidéos faites sur un jeu. Nous avons remarqué que cet onglet n'était pas bien optimisé et ne permettait pas de naviguer de façon optimale afin de trouver la vidéo qui correspond le mieux à nôtre besoin. 
+En effet cet onglet permet de recenser les vidéos faites sur un jeu. Nous avons remarqué que cet onglet n'était pas bien optimisé et ne permettait pas de naviguer de façon optimale afin de trouver la vidéo qui correspond le mieux à nôtre besoin. On peut voir sur l'image suivante que l'on ne peut pas trier les vidéos par date de mise en ligne, ni nombre de vues :
+
+![Onglet "Récentes" de Youtube pour le jeu Apex Legends](https://zupimages.net/up/23/08/14nl.png "Onglet "Récentes" de Youtube pour le jeu Apex Legends")
 
 Afin de selectionner les jeux pour lesquels nous allons récupérer les données des vidéos, nous avons voulu récupérer les 20 jeux les plus populaires du moment afin que notre projet fonctionne en temps réel et qu'il soit constamment à jour. Pour cela nous avons décider de récupérer sur le site de streaming "Twitch" le nom des 20 jeux avec le plus de spectateurs. 
 
