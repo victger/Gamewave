@@ -10,7 +10,6 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 from webdriver_manager.chrome import ChromeDriverManager
 from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Document, Text, Integer
 from elasticsearch.helpers import bulk
 from flask import Flask, render_template, request
 
@@ -51,9 +50,8 @@ visible = EC.visibility_of_element_located
 wait = WebDriverWait(driver, 5)
 data_youtube=pd.DataFrame()
 
-for k in range(0,3):
+for k in range(0,len(data_twitch)):
 
-    print(k)
     titre= []
     nb_vue= []
     date= []
@@ -140,7 +138,7 @@ else :
     bulk(es, generate_data(data))
 
 
-###### FLASK #######
+# ###### FLASK #######
 
 app = Flask(__name__)
 
@@ -149,9 +147,6 @@ def index():
     if request.method == 'GET':
         result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 2000)
         data = [hit['_source'] for hit in result['hits']['hits']]
-        # sort_order = request.args.get('asc')
-        # print(sort_order)
-        # data = sort_search_results(data, sort_order)
         return render_template('hello.html', data=data)
     
 @app.route('/recherche', methods=['GET', 'POST'])
@@ -160,8 +155,6 @@ def recherche():
         jeu = request.args.get('jeu')
         filtre_jeux = search2(jeu)
         data = [hit['_source'] for hit in filtre_jeux['hits']['hits']]
-        # sort_order = request.args.get('sort')
-        # data = sort_search_results(data, sort_order)
         return render_template('hello.html', data=data)
 
 @app.route('/filtrage_mots', methods=['GET', 'POST'])
@@ -171,8 +164,6 @@ def filtrage():
         fields = request.args.get('fields')
         fields= fields.split('|')
         data = search(query, fields)
-        # sort_order = request.args.get('sort')
-        # data = sort_search_results(data, sort_order)
         return render_template('hello.html', data=data)
 
 def search(query, fields):
@@ -235,5 +226,4 @@ def search2(menu_deroulant):
 
     return result
 
-if __name__ == '__main__':
-    app.run(debug=True)
+app.run()
