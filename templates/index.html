@@ -19,6 +19,7 @@
     <label><input type="checkbox" name="field" value="Chaîne"> Chaîne</label>
     <label><input type="checkbox" name="field" value="Nombre de vues"> Nombre de vues</label>
     <label><input type="checkbox" name="field" value="Date de la mise en ligne"> Date de la mise en ligne</label>
+    <label><input type="checkbox" name="field" value="Tags"> Tags</label>
     <label><input type="checkbox" name="field" value="Lien de la vidéo"> Lien de la vidéo</label>
     <br><br>
 
@@ -30,7 +31,7 @@
 
     <!-- Liste déroulante permettant de filtrer sur les jeux -->
 
-    <select id="choix" name="choix_jeu" onchange="change(this.value)">
+    <select id="choix" name="choix_jeu" onchange="change_jeu(this.value)">
         {% set jeu= data|map(attribute='Jeu')|unique|list %} <!-- Code Jinja2 permettant de récupérer une liste unique des jeux dans notre base de données Elastic Search -->
         {% for i in range(jeu|length) %}
             <option value="{{jeu[i]}}">{{jeu[i]}}</option>
@@ -47,6 +48,7 @@
                 <th>Chaîne</th>
                 <th>Nombre de vues</th>
                 <th>Date de la mise en ligne</th>
+                <th>Tags</th>
                 <th>Lien de la vidéo</th>
             </tr>
         </thead>
@@ -61,6 +63,7 @@
                 <td>{{ doc['Chaîne'] }}</td>
                 <td>{{ doc['Nombre de vues'] }}</td>
                 <td>{{ doc['Date de la mise en ligne'] }}</td>
+                <td>{{ doc['Tags'] }}</td>
                 <td><a href="{{ doc['Lien de la vidéo'] }}">{{ doc['Lien de la vidéo'] }}</a></td>
             </tr>
             {% endfor %}
@@ -71,8 +74,8 @@
 
 <script>// Code permettant le bon fonctionnement des requêtes et du changement de pages
 
-    function change(value){
-        document.location= "/recherche?jeu="+value
+    function change_jeu(value){
+        document.location= "/filtrage_jeu?jeu="+value
     }
     
     function filtrage_mots(){

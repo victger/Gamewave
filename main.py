@@ -2,9 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import pandas as pd
-import time
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -71,11 +69,11 @@ for k in range(0,len(data_twitch)):
     chaine= []
     jeu= []
     lien=[]
+    tag= []
     titres= []
     nb_vues= []
     dates= []
     chaines= []
-    jeux=[]
     liens=[]
     temp_df=[]
 
@@ -125,7 +123,8 @@ for k in range(0,len(data_twitch)):
         chaine+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[1]/ytd-channel-name/div/div/yt-formatted-string/a")
         nb_vue+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/span[1]")
         date+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/span[2]")
-        jeu+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/div[3]/ytd-interactive-tabbed-header-renderer/tp-yt-app-header-layout/div/tp-yt-app-header/div[2]/div/div/div/div[1]")
+        jeu.append(data_twitch['Jeu'][k])
+        tag.append(data_twitch['Tags'][k])
         lien+= driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/h3/a")
 
     # On range les informations sous formes de textes dans des tableaux
@@ -133,20 +132,20 @@ for k in range(0,len(data_twitch)):
     titres+=[titre[i].text for i in range(len(titre))]
     chaines+=[chaine[i].text for i in range(len(chaine))]
     nb_vues+=[nb_vue[i].text for i in range(len(nb_vue))]
-    dates+=[date[i].text for i in range(len(date))] 
-    jeux+=[jeu[i].text for i in range(len(jeu))]
+    dates+=[date[i].text for i in range(len(date))]
     liens+=[lien[i].get_attribute('href') for i in range(len(lien))]
 
     # On crée une dataframe temporaire contenant les informations de la vidéo en cours de scraping et on concatène toutes les dataframes temporaires pour obtenir la dataframe finale.
 
-    temp_df= pd.DataFrame(list(zip(jeux,titres, chaines, nb_vues, dates, liens)))
+    temp_df= pd.DataFrame(list(zip(jeu,titres, chaines, nb_vues, dates, tag, liens)))
     data_youtube= pd.concat([data_youtube,temp_df], axis=0)
 driver.quit()
 
 # On renomme correctement les colonnes et on effectue un foramttage de la colonne "Nombre de vues"
 
-data_youtube.columns = ['Jeu', 'Titre', 'Chaîne', 'Nombre de vues', 'Date de la mise en ligne', 'Lien de la vidéo']
+data_youtube.columns = ['Jeu', 'Titre', 'Chaîne', 'Nombre de vues', 'Date de la mise en ligne', 'Tags', 'Lien de la vidéo']
 data_youtube['Nombre de vues'] = data_youtube['Nombre de vues'].apply(lambda x: int((x.replace('M', '000000').replace('k', '000').replace(',', '').replace('de vues', '').replace('vues', '').replace(' ', '').replace('spectateurs', ''))))
+print(data_youtube)
 
 data = data_youtube.to_dict('records') # On transforme la dataframe en dictionnaire pour l'inclure dans Docker
 
@@ -176,8 +175,8 @@ def index():
 
 # Création d'une nouvelle page recherche dans laquelle on effectue une recherche sur les jeux avec une sélection
 
-@app.route('/recherche', methods=['GET', 'POST'])
-def recherche():
+@app.route('/filtrage_jeu', methods=['GET', 'POST'])
+def filtrage_jeu():
     if request.method == 'GET':
         jeu = request.args.get('jeu')
         filtre_jeux = search2(jeu)
@@ -187,7 +186,7 @@ def recherche():
 # Création d'une nouvelle page recherche dans laquelle on effectue une recherche sur les mots
 
 @app.route('/filtrage_mots', methods=['GET', 'POST'])
-def filtrage():
+def filtrage_mots():
     if request.method == 'GET':
         query = request.args.get('query')
         fields = request.args.get('fields')

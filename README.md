@@ -37,6 +37,9 @@ python -m pip install -r requirements.txt
 ```
 
 **Utilisation**
+
+Avant tout, il est nécessaire (si ce n'est pas le cas) d'installer Docker sur sa machine et le conteneur Elastic Search. Une fois Docker installé, on lance le conteneur Elastic Search. On vérifie également que le port utilisé est bien le 9200. Si ce n'est pas le cas, on modifiera notre code à la ligne 156. 
+
 Pour lancer l’application sur Windows taper l’instruction suivante depuis le terminal en vous plaçant à la racine du dossier téléchargé :
 
 ```
@@ -45,6 +48,11 @@ python main.py
 
 Le scraping est alors lancé et vous pouvez observer en temps réel l'avancée dans le navigateur.
 Une fois cela fini, vous pouvez maintenant accéder à l'application sur  votre navigateur à l’adresse suivante : [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+Vous pouvez alors observer le résultat du scraping. Par défaut, toutes les vidéos et les informations qui lui sont associées sont affichées. Il est possible de :
+- Trier les informations selon le jeu vidéo
+- Chercher des mots parmi différents champs qui sont à cocher en cliquant ensuite sur "Chercher"
+- Accéder aux vidéos en cliquant sur le lien en question
 
 ## Developper guide
 
@@ -83,7 +91,7 @@ Le deuxième script a pour objectif de récupérer les données de vidéos YouTu
 Plus précisément, pour chaque jeu dans "data_twitch", le script va naviguer sur la page YouTube de recherche en utilisant le nom du jeu comme terme de recherche. 
 
 Ensuite, on clique sur la carte de jeu du jeu vidéo concerné.
-Une fois sur la page, on extrait les informations des 100 premières vidéos suggérées dans la section "Récentes" en récupérant les informations de chaque vidéo telles que le titre, la chaîne, le nombre de vues, la date de publication et le jeu associé. Ces informations sont stockées dans un dataframe "data_youtube". On fait cela pour tous les jeux vidéos présents dans la dataframe data_twitch.
+Une fois sur la page, on extrait les informations des 100 premières vidéos suggérées dans la section "Récentes" en récupérant les informations de chaque vidéo telles que le titre, la chaîne, le nombre de vues, la date de publication, les tags et le jeu associé. Ces informations sont stockées dans un dataframe "data_youtube". On fait cela pour tous les jeux vidéos présents dans la dataframe data_twitch.
 
 Par la suite, on rentre cette dataframe dans la base de données Elastic Search. On crée alors des requêtes afin que l'utilisateur puisse interagir avec nos données. On crée également des nouvelles pages pour effectuer nos requêtes.
 
