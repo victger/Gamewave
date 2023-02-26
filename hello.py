@@ -7,20 +7,32 @@ es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
 @app.route('/', methods=['GET', 'POST'])
 def index():
     # Si la barre de recherche a été soumise
-    if request.method == 'POST':
-        query = request.form['query']
-        # field = request.form['field']
-        field = request.form.get('field')
-        data = search(query, field)
-        return render_template('hello.html', data=data)
-    else:
+    if request.method == 'GET':
         # Recherchez tous les documents dans l'index "yt_twitch"
         result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 2000)
         # Récupérez les documents et les stockez dans une liste
         data = [hit['_source'] for hit in result['hits']['hits']]
+        print(data)
+        return render_template('hello.html', data=data)
+    
+@app.route('/recherche', methods=['GET', 'POST'])
+def recherche():
+    if request.method == 'GET':
+        jeu = request.args.get('jeu')
+        filtre_jeux = search2(jeu)
+        data = [hit['_source'] for hit in filtre_jeux['hits']['hits']]
         return render_template('hello.html', data=data)
 
-def search(query, field):
+@app.route('/filtrage_mots', methods=['GET', 'POST'])
+def filtrage():
+    if request.method == 'GET':
+        query = request.args.get('query')
+        fields = request.args.get('fields')
+        fields= fields.split('|')
+        data = search(query, fields)
+        return render_template('hello.html', data=data)
+
+def search(query, fields):
     QUERY ={
     "query": {
         "bool": {
@@ -30,8 +42,9 @@ def search(query, field):
             "bool": {
                 "should": [
                 {
-                    "match_phrase": {
-                    field : query
+                    "multi_match": {
+                        "query": query,
+                        "fields": fields
                     }
                 }
                 ],
@@ -50,6 +63,34 @@ def search(query, field):
     [results.append(elt['_source']) for elt in result["hits"]["hits"]]
 
     return results
+
+def search2(menu_deroulant):
+    QUERY ={
+    "query": {
+        "bool": {
+        "must": [],
+        "filter": [
+            {
+            "bool": {
+                "should": [
+                {
+                    "match_phrase": {
+                    "Jeu" : menu_deroulant
+                    }
+                }
+                ],
+                "minimum_should_match": 1
+            }
+            }
+        ],
+        "should": [],
+        "must_not": []
+        }
+    }
+    }
+    result = es.search(index="yt_twitch", body=QUERY,size=1500)
+
+    return result
 
 if __name__ == '__main__':
     app.run(debug=True)
