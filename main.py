@@ -59,7 +59,7 @@ visible = EC.visibility_of_element_located
 wait = WebDriverWait(driver, 5)
 data_youtube=pd.DataFrame()
 
-# Cette boucle permet de parcourir tous les jeux contenus dans notre dataframe Twitch sur Youtube
+# Cette boucle permet de parcourir tous les jeux contenus dans notre dataframe Twitch sur Youtube. Il faut changer le paramètre len(data_twitch) pour echercher moins de jeux
 
 for k in range(0,len(data_twitch)):
 
@@ -172,7 +172,7 @@ def index():
     if request.method == 'GET':
         result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 2000)
         data = [hit['_source'] for hit in result['hits']['hits']]
-        return render_template('hello.html', data=data)
+        return render_template('index.html', data=data)
 
 # Création d'une nouvelle page recherche dans laquelle on effectue une recherche sur les jeux avec une sélection
 
@@ -182,7 +182,7 @@ def recherche():
         jeu = request.args.get('jeu')
         filtre_jeux = search2(jeu)
         data = [hit['_source'] for hit in filtre_jeux['hits']['hits']]
-        return render_template('hello.html', data=data)
+        return render_template('index.html', data=data)
 
 # Création d'une nouvelle page recherche dans laquelle on effectue une recherche sur les mots
 
@@ -193,7 +193,7 @@ def filtrage():
         fields = request.args.get('fields')
         fields= fields.split('|')
         data = search(query, fields)
-        return render_template('hello.html', data=data)
+        return render_template('index.html', data=data)
 
 # Requête search faisaint une recherche sur les mots donnés dans la barre de recherche
 
