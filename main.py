@@ -13,7 +13,7 @@ from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 from flask import Flask, render_template, request
 
-# Définition de fonctions
+# Définition de la fonction permettant d'utiliser les dataframes générés sur Elsstic Search
 
 def generate_data(data):
     for docu in data:
@@ -22,26 +22,35 @@ def generate_data(data):
             "_source": {k:v if v else None for k,v in docu.items()},
         }
 
-# Initialiser le navigateur
+# On initialise le navigateur pour scrapper
 
 driver = webdriver.Chrome(ChromeDriverManager().install())
 driver.maximize_window()
 
-# Naviguer vers Twitch
+# Navigation vers Twitch
+
 driver.get("https://www.twitch.tv/directory?sort=VIEWER_COUNT")
 
-time.sleep(5)
+time.sleep(1)
+
+# card correspond à l'ensemble des informations textuelles dans la carte de jeu
 
 card= []
 
 for i in range(2,22):
     card+= driver.find_elements(By.XPATH,"/html/body/div[1]/div/div[2]/div/main/div[1]/div[3]/div/div/div/div/section/div[4]/div/div[1]/div["+str(i)+"]")
 
+# On récupère toutes les informations textuelles contenues dans les cartes en splittant le texte
+
 features= [card[i].text.split("\n") for i in range(len(card))]
+
+# On range les informations dans les tableaux adéquats en faisant attention à ne pas inclure l'information NOUVEAU qui nous est inutile
 
 jeu= [features[i][0] if features[i][0]!="NOUVEAU" else features[i][1] for i in range(len(card))]
 nb_spec= [features[i][1] if features[i][0]!="NOUVEAU" else features[i][2] for i in range(len(card))]
 tags= [features[i][2:] if features[i][0]!="NOUVEAU" else features[i][3:] for i in range(len(card))]
+
+# On range toutes les informations dans une dataframe
 
 data_twitch= pd.DataFrame(list(zip(jeu, nb_spec, tags)), columns=["Jeu", "Nombre de spectateurs", "Tags"]) #Dataframe final
 
@@ -50,7 +59,11 @@ visible = EC.visibility_of_element_located
 wait = WebDriverWait(driver, 5)
 data_youtube=pd.DataFrame()
 
+# Cette boucle permet de parcourir tous les jeux contenus dans notre dataframe Twitch sur Youtube
+
 for k in range(0,len(data_twitch)):
+
+    # A chaque itération, on initialise nos tableaux pour concaténer nos informations dans la dataframe sans doublons
 
     titre= []
     nb_vue= []
@@ -66,26 +79,33 @@ for k in range(0,len(data_twitch)):
     liens=[]
     temp_df=[]
 
-    # Navigate to url with video being appended to search_query
+    # Navigation vers le ième jeu de notre datafrme Twitch
+
     driver.get('https://www.youtube.com/results?search_query={}'.format(str(data_twitch["Jeu"][k])))
     
     time.sleep(1)
+
+    # Acceptation des cookies Youtube à la première itération
 
     if k==0:
         button = driver.find_element(By.XPATH,"//*[@id='content']/div[2]/div[6]/div[1]/ytd-button-renderer[1]/yt-button-shape/button/yt-touch-feedback-shape/div/div[2]")
         button.click()
 
+    # On clique sur la carte de jeu Youtube si elle est disponible, sinon on passe à la prochaine itération.
+
     try:
-        # code à tester
         driver.find_element(By.XPATH, "//*[@id='watch-card-subtitle']").click()
     except:
-        # code à exécuter en cas d'exception
         continue
+
+    # On clique sur l'onglet "Récentes" dans la carte du jeu
 
     wait.until(visible((By.XPATH, "//*[@id='tabsContent']/tp-yt-paper-tab[3]/div")))
     driver.find_element(By.XPATH, "//*[@id='tabsContent']/tp-yt-paper-tab[3]/div").click()
 
     time.sleep(2)
+
+    # On scrolle suffisamment dans la page pour scrapper 100 vidéos de la carte de jeu dans l'onglet "Récentes"
 
     height = driver.execute_script('''var body = document.body,
                                         html = document.documentElement;
@@ -95,9 +115,9 @@ for k in range(0,len(data_twitch)):
 
     driver.execute_script("window.scrollTo(0, "+str(height)+");")
 
-    # Extraire le nombre de spectateurs à partir de l'élément HTML approprié
-
     time.sleep(2)
+
+    # On récupère le titre, la chaîne, le nombre de vues, la date, le jeu ainsi que le lien de la vidéo concernée
 
     for i in range(1,101):
         
@@ -108,7 +128,7 @@ for k in range(0,len(data_twitch)):
         jeu+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/div[3]/ytd-interactive-tabbed-header-renderer/tp-yt-app-header-layout/div/tp-yt-app-header/div[2]/div/div/div/div[1]")
         lien+= driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/h3/a")
 
-    # Récupération des données des vidéos Youtube
+    # On range les informations sous formes de textes dans des tableaux
 
     titres+=[titre[i].text for i in range(len(titre))]
     chaines+=[chaine[i].text for i in range(len(chaine))]
@@ -116,16 +136,19 @@ for k in range(0,len(data_twitch)):
     dates+=[date[i].text for i in range(len(date))] 
     jeux+=[jeu[i].text for i in range(len(jeu))]
     liens+=[lien[i].get_attribute('href') for i in range(len(lien))]
+
+    # On crée une dataframe temporaire contenant les informations de la vidéo en cours de scraping et on concatène toutes les dataframes temporaires pour obtenir la dataframe finale.
+
     temp_df= pd.DataFrame(list(zip(jeux,titres, chaines, nb_vues, dates, liens)))
     data_youtube= pd.concat([data_youtube,temp_df], axis=0)
-
 driver.quit()
 
-data_youtube.columns = ['Jeu', 'Titre', 'Chaîne', 'Nombre de vues', 'Date de la mise en ligne', 'Lien de la vidéo']
+# On renomme correctement les colonnes et on effectue un foramttage de la colonne "Nombre de vues"
 
+data_youtube.columns = ['Jeu', 'Titre', 'Chaîne', 'Nombre de vues', 'Date de la mise en ligne', 'Lien de la vidéo']
 data_youtube['Nombre de vues'] = data_youtube['Nombre de vues'].apply(lambda x: int((x.replace('M', '000000').replace('k', '000').replace(',', '').replace('de vues', '').replace('vues', '').replace(' ', '').replace('spectateurs', ''))))
 
-data = data_youtube.to_dict('records')
+data = data_youtube.to_dict('records') # On transforme la dataframe en dictionnaire pour l'inclure dans Docker
 
 # Initilisation de Docker
 
@@ -142,13 +165,17 @@ else :
 
 app = Flask(__name__)
 
+# Page d'accueil -> On répertorie toutes les informations de notre dataframe
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
         result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 2000)
         data = [hit['_source'] for hit in result['hits']['hits']]
         return render_template('hello.html', data=data)
-    
+
+# Création d'une nouvelle page recherche dans laquelle on effectue une recherche sur les jeux avec une sélection
+
 @app.route('/recherche', methods=['GET', 'POST'])
 def recherche():
     if request.method == 'GET':
@@ -156,6 +183,8 @@ def recherche():
         filtre_jeux = search2(jeu)
         data = [hit['_source'] for hit in filtre_jeux['hits']['hits']]
         return render_template('hello.html', data=data)
+
+# Création d'une nouvelle page recherche dans laquelle on effectue une recherche sur les mots
 
 @app.route('/filtrage_mots', methods=['GET', 'POST'])
 def filtrage():
@@ -165,6 +194,8 @@ def filtrage():
         fields= fields.split('|')
         data = search(query, fields)
         return render_template('hello.html', data=data)
+
+# Requête search faisaint une recherche sur les mots donnés dans la barre de recherche
 
 def search(query, fields):
     QUERY ={
@@ -197,6 +228,8 @@ def search(query, fields):
     [results.append(elt['_source']) for elt in result["hits"]["hits"]]
 
     return results
+
+# Requête search2 faisant une recherche sur les jeux de la sélection
 
 def search2(menu_deroulant):
     QUERY ={

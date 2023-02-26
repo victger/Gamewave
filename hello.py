@@ -9,9 +9,6 @@ def index():
     if request.method == 'GET':
         result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 2000)
         data = [hit['_source'] for hit in result['hits']['hits']]
-        # sort_order = request.args.get('asc')
-        # print(sort_order)
-        # data = sort_search_results(data, sort_order)
         return render_template('hello.html', data=data)
     
 @app.route('/recherche', methods=['GET', 'POST'])
@@ -20,8 +17,6 @@ def recherche():
         jeu = request.args.get('jeu')
         filtre_jeux = search2(jeu)
         data = [hit['_source'] for hit in filtre_jeux['hits']['hits']]
-        # sort_order = request.args.get('sort')
-        # data = sort_search_results(data, sort_order)
         return render_template('hello.html', data=data)
 
 @app.route('/filtrage_mots', methods=['GET', 'POST'])
@@ -31,8 +26,6 @@ def filtrage():
         fields = request.args.get('fields')
         fields= fields.split('|')
         data = search(query, fields)
-        # sort_order = request.args.get('sort')
-        # data = sort_search_results(data, sort_order)
         return render_template('hello.html', data=data)
 
 def search(query, fields):
@@ -94,10 +87,6 @@ def search2(menu_deroulant):
     result = es.search(index="yt_twitch", body=QUERY,size=1500)
 
     return result
-
-# def sort_search_results(results, sort_order):
-#     sorted_results = sorted(results, key=lambda x: x["Nombre de vues"], reverse=sort_order == "asc")
-#     return sorted_results
 
 if __name__ == '__main__':
     app.run(debug=True)

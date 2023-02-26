@@ -4,7 +4,11 @@ Dans le cadre de ce projet, nous avons été chargés de concevoir une applicati
 Nous devons ensuite afficher ces données de manière optimale, en utilisant des fonctionnalités telles qu'un moteur de recherche ou des graphiques, par exemple. Pour y parvenir, nous utiliserons la bases de données Elasticsearch.
 
 ## Sujet du projet
-Nous avons décider d'utiliser des données des vidéos de l'onglet "catégorie" sur Youtube. En effet cet onglet permet de recenser les vidéos faites sur un jeu. Nous avons remarqué que cet onglet n'était pas bien optimisé et ne permettait pas de naviguer de façon optimale afin de trouver la vidéo qui correspond le mieux à nôtre besoin. 
+Nous avons décidé d'exploiter les données présentes dans les cartes de jeux Youtube comme montré ci-contre :
+
+![Image montrant les cartes de jeux sur Youtube](/images/youtube_card.jpg "Carte de jeu pour le jeu vidéo Apex Legends sur Youtube")
+
+. En effet cet onglet permet de recenser les vidéos faites sur un jeu. Nous avons remarqué que cet onglet n'était pas bien optimisé et ne permettait pas de naviguer de façon optimale afin de trouver la vidéo qui correspond le mieux à nôtre besoin. 
 
 Afin de selectionner les jeux pour lesquels nous allons récupérer les données des vidéos, nous avons voulu récupérer les 20 jeux les plus populaires du moment afin que notre projet fonctionne en temps réel et qu'il soit constamment à jour. Pour cela nous avons décider de récupérer sur le site de streaming "Twitch" le nom des 20 jeux avec le plus de spectateurs. 
 

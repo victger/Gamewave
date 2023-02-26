@@ -1,3 +1,5 @@
+// Template d'affichage de données
+
 const searchInput = document.querySelector('#search');
 const rows = document.querySelectorAll('table tbody tr');
 const sortBtns = document.querySelectorAll(".sort-btn");
