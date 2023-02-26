@@ -1,5 +1,7 @@
 # Trend_YT_Twitch
-Ce projet est une application web Flask avec Elasticsearch, permettant de rechercher et de trier des données dans un index Elasticsearch. L'application prend en charge la recherche de texte libre, la recherche par champ et le tri par ordre croissant ou décroissant sur un champ spécifié.
+Dans le cadre de ce projet, nous avons été chargés de concevoir une application web en utilisant le package Flask. L'objectif est de récupérer des données sur le web, en utilisant des données scrapées.
+
+Nous devons ensuite afficher ces données de manière optimale, en utilisant des fonctionnalités telles qu'un moteur de recherche ou des graphiques, par exemple. Pour y parvenir, nous utiliserons la bases de données Elasticsearch.
 
 ## Sujet du projet
 Nous avons décider d'utiliser des données des vidéos de l'onglet "catégorie" sur Youtube. En effet cet onglet permet de recenser les vidéos faites sur un jeu. Nous avons remarqué que cet onglet n'était pas bien optimisé et ne permettait pas de naviguer de façon optimale afin de trouver la vidéo qui correspond le mieux à nôtre besoin. 
