@@ -14,6 +14,7 @@
     <label><input type="checkbox" name="field" value="Chaîne"> Chaîne</label>
     <label><input type="checkbox" name="field" value="Nombre de vues"> Nombre de vues</label>
     <label><input type="checkbox" name="field" value="Date de la mise en ligne"> Date de la mise en ligne</label>
+    <label><input type="checkbox" name="field" value="Lien de la vidéo"> Lien de la vidéo</label>
     <br><br>
     <button name="submit" value="Chercher" onclick="filtrage_mots()">Chercher</button>
     <!-- <button type="submit" name="sort" value="asc" onclick="tri_ascendant()">Les moins vues</button>
@@ -36,6 +37,7 @@
                 <th>Chaîne</th>
                 <th>Nombre de vues</th>
                 <th>Date de la mise en ligne</th>
+                <th>Lien de la vidéo</th>
             </tr>
         </thead>
         <tbody>
@@ -46,6 +48,7 @@
                 <td>{{ doc['Chaîne'] }}</td>
                 <td>{{ doc['Nombre de vues'] }}</td>
                 <td>{{ doc['Date de la mise en ligne'] }}</td>
+                <td><a href="{{ doc['Lien de la vidéo'] }}">{{ doc['Lien de la vidéo'] }}</a></td>
             </tr>
             {% endfor %}
         </tbody>
