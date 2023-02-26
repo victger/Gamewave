@@ -103,7 +103,7 @@ Ce fichier HTML contient toutes les instructions HTML nécessaires à l'affichag
 
  - **style.css** :
 
-Ce fichier CSS permet un rendu amélioré de l'interface d enotre page HTML.
+Ce fichier CSS permet un rendu amélioré de l'interface de notre page HTML.
 
  - **app.js** : 
 
