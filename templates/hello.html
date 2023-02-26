@@ -6,10 +6,16 @@
 </head>
 <body>
     <h1>Données YouTube et Twitch</h1>
-    <form>
-      <label for="search">Rechercher : </label>
-      <input type="text" id="search" name="search">
-      <input type="submit" value="Rechercher">
+    <form method="POST">
+      <input type="text" name="query" placeholder="Enter your search query" required>
+      <br><br>
+        <label><input type="checkbox" name="field" value="Jeu"> Jeu</label>
+        <label><input type="checkbox" name="field" value="Titre"> Titre</label>
+        <label><input type="checkbox" name="field" value="Chaîne"> Chaîne</label>
+        <label><input type="checkbox" name="field" value="Nombre de vues"> Nombre de vues</label>
+        <label><input type="checkbox" name="field" value="Date de la mise en ligne"> Date de la mise en ligne</label>
+        <br><br>
+        <input type="submit" name="submit" value="Search">
     </form>
     <table>
         <thead>
@@ -22,7 +28,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for doc in data %}
+            {% for doc in results %}
             <tr>
                 <td>{{ doc['Jeu'] }}</td>
                 <td>{{ doc['Titre'] }}</td>

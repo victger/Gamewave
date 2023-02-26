@@ -9,15 +9,47 @@ def index():
     # Si la barre de recherche a été soumise
     if request.method == 'POST':
         query = request.form['query']
-        # Recherchez les documents dans l'index "yt_twitch" contenant la requête de recherche
-        
-        result = es.search(index="yt_twitch", body={"query": {"match": {"_all": query}}},size = 1500)
+        # field = request.form['field']
+        field = request.form.get('field')
+        results = search(query, field)
+        return render_template('hello.html', results=results)
     else:
         # Recherchez tous les documents dans l'index "yt_twitch"
         result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 1500)
-    # Récupérez les documents et les stockez dans une liste
-    data = [hit['_source'] for hit in result['hits']['hits']]
-    return render_template('hello.html', data=data)
+        # Récupérez les documents et les stockez dans une liste
+        data = [hit['_source'] for hit in result['hits']['hits']]
+        return render_template('hello.html', data=data)
+
+def search(query, field):
+    QUERY ={
+    "query": {
+        "bool": {
+        "must": [],
+        "filter": [
+            {
+            "bool": {
+                "should": [
+                {
+                    "match_phrase": {
+                    field : query
+                    }
+                }
+                ],
+                "minimum_should_match": 1
+            }
+            }
+        ],
+        "should": [],
+        "must_not": []
+        }
+    }
+    }
+    result = es.search(index="yt_twitch", body=QUERY,size=1500)
+
+    results = []
+    [results.append(elt['_source']) for elt in result["hits"]["hits"]]
+
+    return results
 
 if __name__ == '__main__':
     app.run(debug=True)
