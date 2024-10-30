@@ -1,8 +1,9 @@
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import pandas as pd
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -10,8 +11,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
 from flask import Flask, render_template, request
+import sys
 
-# Définition de la fonction permettant d'utiliser les dataframes générés sur Elsstic Search
+# Définition de la fonction permettant d'utiliser les dataframes générés sur Elastic Search
 
 def generate_data(data):
     for docu in data:
@@ -22,36 +24,49 @@ def generate_data(data):
 
 # On initialise le navigateur pour scrapper
 
-driver = webdriver.Chrome(ChromeDriverManager().install())
+chrome_driver_path= r"C:\Users\vgvic\Documents\Projets\Trend_YT_Twitch\chromedriver-win64\chromedriver.exe"
+
+driver = webdriver.Chrome(service=ChromeService(chrome_driver_path))
 driver.maximize_window()
 
 # Navigation vers Twitch
 
-driver.get("https://www.twitch.tv/directory?sort=VIEWER_COUNT")
+# driver.get("https://www.twitch.tv/directory?sort=VIEWER_COUNT")
+# time.sleep(1)
 
-time.sleep(1)
+# # card correspond à l'ensemble des informations textuelles dans la carte de jeu
 
-# card correspond à l'ensemble des informations textuelles dans la carte de jeu
+# game_title= []
+# viewers= []
+# tags= []
 
-card= []
+# for i in range(0, 10):  # Remplacer 10 par le nombre maximum de cartes que tu souhaites scraper
+#     try:
+#         # Attendre que l'élément avec un style 'order: i;' soit présent
+#         card = WebDriverWait(driver, 10).until(
+#             EC.presence_of_element_located((By.XPATH, f"//div[contains(@style, 'order: {i};') and not(@id='directory-rectangle')]"))
+#         )
 
-for i in range(2,22):
-    card+= driver.find_elements(By.XPATH,"/html/body/div[1]/div/div[2]/div/main/div[1]/div[3]/div/div/div/div/section/div[4]/div/div[1]/div["+str(i)+"]")
+#         # Extraire le titre du jeu
+#         game_title.append(card.find_element(By.XPATH, f"//a[contains(@data-a-target, 'card-{i}')]//h2").text)
+        
+#         # Extraire le nombre de spectateurs
+#         viewers.append(card.find_element(By.XPATH, f"//p//a[contains(@data-a-target, 'card-{i}')]").text)
 
-# On récupère toutes les informations textuelles contenues dans les cartes en splittant le texte
+#         # Extraire le lien vers la catégorie du jeu
+#         tag_elements = card.find_elements(By.XPATH, ".//button[@aria-label]//span")
+#         tags.append([tag.text for tag in tag_elements])
 
-features= [card[i].text.split("\n") for i in range(len(card))]
+#     except Exception as e:
+#         print(f'Erreur de récupération à la position {i}.')
 
-# On range les informations dans les tableaux adéquats en faisant attention à ne pas inclure l'information NOUVEAU qui nous est inutile
+# # On range toutes les informations dans une dataframe
 
-jeu= [features[i][0] if features[i][0]!="NOUVEAU" else features[i][1] for i in range(len(card))]
-nb_spec= [features[i][1] if features[i][0]!="NOUVEAU" else features[i][2] for i in range(len(card))]
-tags= [features[i][2:] if features[i][0]!="NOUVEAU" else features[i][3:] for i in range(len(card))]
+# data_twitch= pd.DataFrame(list(zip(game_title, viewers, tags)), columns=["Game", "Viewers", "Tags"]) #Dataframe final
 
-# On range toutes les informations dans une dataframe
 
-data_twitch= pd.DataFrame(list(zip(jeu, nb_spec, tags)), columns=["Jeu", "Nombre de spectateurs", "Tags"]) #Dataframe final
 
+data_twitch = pd.read_csv('data_twitch.csv')
 presence = EC.presence_of_element_located
 visible = EC.visibility_of_element_located
 wait = WebDriverWait(driver, 5)
@@ -79,7 +94,7 @@ for k in range(0,len(data_twitch)):
 
     # Navigation vers le ième jeu de notre datafrme Twitch
 
-    driver.get('https://www.youtube.com/results?search_query={}'.format(str(data_twitch["Jeu"][k])))
+    driver.get('https://www.youtube.com/results?search_query={}'.format(str(data_twitch["Game"][k])))
     
     time.sleep(1)
 
@@ -98,8 +113,9 @@ for k in range(0,len(data_twitch)):
 
     # On clique sur l'onglet "Récentes" dans la carte du jeu
 
-    wait.until(visible((By.XPATH, "//*[@id='tabsContent']/tp-yt-paper-tab[3]/div")))
-    driver.find_element(By.XPATH, "//*[@id='tabsContent']/tp-yt-paper-tab[3]/div").click()
+    recent_tab_position= 4
+    recent_tab = wait.until(visible((By.XPATH, f"(//tp-yt-paper-tab[@role='tab'])[{recent_tab_position}]")))
+    recent_tab.click()
 
     time.sleep(2)
 
@@ -117,28 +133,53 @@ for k in range(0,len(data_twitch)):
 
     # On récupère le titre, la chaîne, le nombre de vues, la date, le jeu ainsi que le lien de la vidéo concernée
 
-    for i in range(1,101):
+    
+    total_grid= driver.find_element(By.XPATH, "//div[contains(@id,'items') and contains(@class, 'style-scope ytd-grid-renderer')]")
+
+    grids= total_grid.find_elements(By.XPATH, ".//ytd-grid-video-renderer")[0]
+
+    # video_title= grids.find_element(By.XPATH, ".//a[contains(@id, 'video-title')]").text
+    # channel= grids.find_element(By.XPATH, ".//ytd-channel-name").text
+    # metadata= grids.find_elements(By.XPATH, ".//div[contains(@id, 'metadata-line')]")
+    # for elt in metadata:
+    #     views= elt[0]
+    #     date= elt[1]
+    # link= grids.find_element(By.XPATH, ".//a[contains(@id, 'video-title')]").get_attribute("href")
+
+    sys.exit()
+
+
+    # for i in range(1,101):
         
-        titre+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/h3/a")
-        chaine+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[1]/ytd-channel-name/div/div/yt-formatted-string/a")
-        nb_vue+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/span[1]")
-        date+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/span[2]")
-        jeu.append(data_twitch['Jeu'][k])
-        tag.append(data_twitch['Tags'][k])
-        lien+= driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/h3/a")
+    #     titre+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/h3/a")
+        
+    #     print(titre)
+    #     sys.exit()
+        
+    #     chaine+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[1]/ytd-channel-name/div/div/yt-formatted-string/a")
+    #     nb_vue+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/span[1]")
+    #     date+=driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/div/div[1]/div[2]/span[2]")
+    #     jeu.append(data_twitch['Game'][k])
+    #     tag.append(data_twitch['Tags'][k])
+    #     lien+= driver.find_elements(By.XPATH,"/html/body/ytd-app/div[1]/ytd-page-manager/ytd-browse/ytd-two-column-browse-results-renderer/div[1]/ytd-section-list-renderer/div[2]/ytd-item-section-renderer/div[3]/ytd-grid-renderer/div[1]/ytd-grid-video-renderer["+str(i)+"]/div[1]/div[1]/div[2]/div/h3/a")
 
-    # On range les informations sous formes de textes dans des tableaux
+    # # On range les informations sous formes de textes dans des tableaux
 
-    titres+=[titre[i].text for i in range(len(titre))]
-    chaines+=[chaine[i].text for i in range(len(chaine))]
-    nb_vues+=[nb_vue[i].text for i in range(len(nb_vue))]
-    dates+=[date[i].text for i in range(len(date))]
-    liens+=[lien[i].get_attribute('href') for i in range(len(lien))]
+    # titres+=[titre[i].text for i in range(len(titre))]
+    # chaines+=[chaine[i].text for i in range(len(chaine))]
+    # nb_vues+=[nb_vue[i].text for i in range(len(nb_vue))]
+    # dates+=[date[i].text for i in range(len(date))]
+    # liens+=[lien[i].get_attribute('href') for i in range(len(lien))]
 
     # On crée une dataframe temporaire contenant les informations de la vidéo en cours de scraping et on concatène toutes les dataframes temporaires pour obtenir la dataframe finale.
 
     temp_df= pd.DataFrame(list(zip(jeu,titres, chaines, nb_vues, dates, tag, liens)))
     data_youtube= pd.concat([data_youtube,temp_df], axis=0)
+
+print(data_youtube)
+
+sys.exit()
+
 driver.quit()
 
 # On renomme correctement les colonnes et on effectue un foramttage de la colonne "Nombre de vues"
