@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <title>GameWave</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Navigating YouTube Video Game Trends</h1>
+
+        <form>
+            <input type="text" name="query" placeholder="Enter your search query" required>
+
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="field" value="Game"> Game</label>
+                <label><input type="checkbox" name="field" value="Video title"> Video Title</label>
+                <label><input type="checkbox" name="field" value="Channel"> Channel</label>
+                <label><input type="checkbox" name="field" value="Views"> Views</label>
+                <label><input type="checkbox" name="field" value="Date"> Date</label>
+                <label><input type="checkbox" name="field" value="Tags"> Tags</label>
+                <label><input type="checkbox" name="field" value="Link"> Link</label>
+            </div>
+
+            <button type="button" name="submit" value="Search" onclick="filter_words()">Search</button>
+
+            <label for="game_choice">Select a game:</label>
+            <select id="game_choice" name="game_choice" onchange="change_game(this.value)">
+                {% set game= data|map(attribute='Game')|unique|list %}
+                {% for i in range(game|length) %}
+                    <option value="{{game[i]}}">{{game[i]}}</option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Game</th>
+                    <th>Video Title</th>
+                    <th>Channel</th>
+                    <th>Views</th>
+                    <th>Date</th>
+                    <th>Tags</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doc in data %}
+                <tr>
+                    <td>{{ doc['Game'] }}</td>
+                    <td>{{ doc['Video title'] }}</td>
+                    <td>{{ doc['Channel'] }}</td>
+                    <td>{{ doc['Views'] }}</td>
+                    <td>{{ doc['Date'] }}</td>
+                    <td>{{ doc['Tags'] }}</td>
+                    <td><a href="{{ doc['Link'] }}" target="_blank">{{ doc['Link'] }}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <script>
+        function change_game(value){
+            document.location = "/filter_game?game=" + value;
+        }
+
+        function filter_words(){
+            var query = document.getElementsByName("query")[0].value;
+            var fields = document.getElementsByName("field");
+            var checklist = "";
+            fields.forEach(field => {
+                if (field.checked) {
+                    if (checklist.length > 0) {
+                        checklist += "|";
+                    }
+                    checklist += field.value;
+                }
+            });
+            document.location = "/filter_words?fields=" + checklist + "&query=" + query;
+        }
+    </script>
+</body>
+</html>
