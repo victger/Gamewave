@@ -20,44 +20,65 @@ h1 {
     color: #333;
 }
 
-form {
-    text-align: center;
+/* Réorganisation de la barre de recherche */
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-bottom: 20px;
 }
 
-.checkbox-group {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 10px 0;
-}
-
-.checkbox-group label {
-    margin: 0 10px;
-}
-
-input[type="text"], select {
+input[type="text"] {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    width: 200px;
-    margin: 10px;
+    width: 300px;
+    margin-right: 10px;
 }
 
-button {
+button[name="submit"] {
     padding: 10px 20px;
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    margin-left: 10px;
 }
 
-button:hover {
+button[name="submit"]:hover {
     background-color: #3e8e41;
 }
 
+/* Réorganisation des filtres */
+.filter-section {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #3e8e41;
+}
+
+/* Table des résultats */
 table {
     width: 100%;
     margin: 20px 0;

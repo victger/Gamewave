@@ -10,30 +10,46 @@
     <div class="container">
         <h1>Navigating YouTube Video Game Trends</h1>
 
-        <form>
-            <input type="text" name="query" placeholder="Enter your search query" required>
-
-            <div class="checkbox-group">
-                <label><input type="checkbox" name="field" value="Game"> Game</label>
-                <label><input type="checkbox" name="field" value="Video title"> Video Title</label>
-                <label><input type="checkbox" name="field" value="Channel"> Channel</label>
-                <label><input type="checkbox" name="field" value="Views"> Views</label>
-                <label><input type="checkbox" name="field" value="Date"> Date</label>
-                <label><input type="checkbox" name="field" value="Tags"> Tags</label>
-                <label><input type="checkbox" name="field" value="Link"> Link</label>
+        <div class="form-group">
+            <!-- Recherche et bouton de soumission alignés horizontalement -->
+            <div class="search-container">
+                <input type="text" id="query" name="query" placeholder="Enter your search query" required>
+                <button type="button" name="submit" value="Search" onclick="filter_words()">Search</button>
             </div>
+        
+            <!-- Section des filtres -->
+            <div class="filter-section">
+            
+                <label for="sorting-options">Select Fields to Filter:</label>
+                <div id="available-filters" class="filter-group">
+                    <!-- Boutons pour sélectionner les champs -->
+                    <button class="filter-btn" data-field="Game">Game</button>
+                    <button class="filter-btn" data-field="Video title">Video Title</button>
+                    <button class="filter-btn" data-field="Channel">Channel</button>
+                    <button class="filter-btn" data-field="Views">Views</button>
+                    <button class="filter-btn" data-field="Date">Date</button>
+                    <button class="filter-btn" data-field="Tags">Tags</button>
+                    <button class="filter-btn" data-field="Link">Link</button>
+                </div>
 
-            <button type="button" name="submit" value="Search" onclick="filter_words()">Search</button>
+                <label for="selected-filters">Selected Filters:</label>
+                <div id="selected-filters" class="filter-group">
+                    <!-- Les boutons sélectionnés apparaîtront ici -->
+                </div>
+                
+            </div>
+        </div>
 
-            <label for="game_choice">Select a game:</label>
-            <select id="game_choice" name="game_choice" onchange="change_game(this.value)">
-                {% set game= data|map(attribute='Game')|unique|list %}
-                {% for i in range(game|length) %}
-                    <option value="{{game[i]}}">{{game[i]}}</option>
-                {% endfor %}
-            </select>
-        </form>
+        <!-- Sélection des jeux -->
+        <label for="game_choice">Select a game:</label>
+        <select id="game_choice" name="game_choice" onchange="change_game(this.value)">
+            {% set game= data|map(attribute='Game')|unique|list %}
+            {% for i in range(game|length) %}
+                <option value="{{game[i]}}">{{game[i]}}</option>
+            {% endfor %}
+        </select>
 
+        <!-- Tableau des résultats -->
         <table>
             <thead>
                 <tr>
@@ -63,24 +79,38 @@
     </div>
 
     <script src="{{ url_for('static', filename='app.js') }}"></script>
-    <script>
-        function change_game(value){
-            document.location = "/filter_game?game=" + value;
-        }
 
-        function filter_words(){
-            var query = document.getElementsByName("query")[0].value;
-            var fields = document.getElementsByName("field");
-            var checklist = "";
-            fields.forEach(field => {
-                if (field.checked) {
-                    if (checklist.length > 0) {
-                        checklist += "|";
-                    }
-                    checklist += field.value;
+    <script>
+        // Fonction pour déplacer les filtres sélectionnés
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const selectedFilters = document.getElementById('selected-filters');
+                const availableFilters = document.getElementById('available-filters');
+
+                if (selectedFilters.contains(this)) {
+                    availableFilters.appendChild(this);
+                } else {
+                    selectedFilters.appendChild(this);
                 }
             });
-            document.location = "/filter_words?fields=" + checklist + "&query=" + query;
+        });
+
+        // Fonction pour filtrer les données
+        function filter_words() {
+            var query = document.getElementById("query").value;
+            var selectedFilters = document.getElementById('selected-filters').children;
+            var checklist = [];
+
+            for (let filter of selectedFilters) {
+                checklist.push(filter.getAttribute('data-field'));
+            }
+
+            if (checklist.length === 0) {
+                checklist = ["Game", "Video title", "Channel", "Views", "Date", "Tags", "Link"];
+            }
+
+            var selectedFields = checklist.join('|');
+            document.location = "/filter_words?fields=" + encodeURIComponent(selectedFields) + "&query=" + encodeURIComponent(query);
         }
     </script>
 </body>
