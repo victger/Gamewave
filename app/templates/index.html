@@ -4,50 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <title>GameWave</title>
 </head>
 <body>
     <div class="container">
         <h1>Navigating YouTube Video Game Trends</h1>
 
-        <div class="form-group">
-            <!-- Recherche et bouton de soumission alignés horizontalement -->
-            <div class="search-container">
-                <input type="text" id="query" name="query" placeholder="Enter your search query" required>
-                <button type="button" name="submit" value="Search" onclick="filter_words()">Search</button>
-            </div>
-        
-            <!-- Section des filtres -->
-            <div class="filter-section">
-            
-                <label for="sorting-options">Select Fields to Filter:</label>
-                <div id="available-filters" class="filter-group">
-                    <!-- Boutons pour sélectionner les champs -->
-                    <button class="filter-btn" data-field="Game">Game</button>
-                    <button class="filter-btn" data-field="Video title">Video Title</button>
-                    <button class="filter-btn" data-field="Channel">Channel</button>
-                    <button class="filter-btn" data-field="Views">Views</button>
-                    <button class="filter-btn" data-field="Date">Date</button>
-                    <button class="filter-btn" data-field="Tags">Tags</button>
-                    <button class="filter-btn" data-field="Link">Link</button>
-                </div>
-
-                <label for="selected-filters">Selected Filters:</label>
-                <div id="selected-filters" class="filter-group">
-                    <!-- Les boutons sélectionnés apparaîtront ici -->
-                </div>
-                
-            </div>
-        </div>
-
-        <!-- Sélection des jeux -->
-        <label for="game_choice">Select a game:</label>
-        <select id="game_choice" name="game_choice" onchange="change_game(this.value)">
-            {% set game= data|map(attribute='Game')|unique|list %}
-            {% for i in range(game|length) %}
-                <option value="{{game[i]}}">{{game[i]}}</option>
-            {% endfor %}
-        </select>
+        <input class="search-box">
+        <ul class="results"></ul>
 
         <!-- Tableau des résultats -->
         <table>
@@ -78,40 +43,32 @@
         </table>
     </div>
 
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
-
-    <script>
-        // Fonction pour déplacer les filtres sélectionnés
-        document.querySelectorAll('.filter-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                const selectedFilters = document.getElementById('selected-filters');
-                const availableFilters = document.getElementById('available-filters');
-
-                if (selectedFilters.contains(this)) {
-                    availableFilters.appendChild(this);
-                } else {
-                    selectedFilters.appendChild(this);
-                }
-            });
-        });
-
-        // Fonction pour filtrer les données
-        function filter_words() {
-            var query = document.getElementById("query").value;
-            var selectedFilters = document.getElementById('selected-filters').children;
-            var checklist = [];
-
-            for (let filter of selectedFilters) {
-                checklist.push(filter.getAttribute('data-field'));
-            }
-
-            if (checklist.length === 0) {
-                checklist = ["Game", "Video title", "Channel", "Views", "Date", "Tags", "Link"];
-            }
-
-            var selectedFields = checklist.join('|');
-            document.location = "/filter_words?fields=" + encodeURIComponent(selectedFields) + "&query=" + encodeURIComponent(query);
-        }
-    </script>
 </body>
+
 </html>
+
+<script>
+
+    $(document).ready(function() {
+        let debounce;
+        $('.search-box').on('keydown', function (e) { 
+        clearTimeout(debounce)
+        debounce = setTimeout(() => {
+                getAutoComplete();  
+        }, 300);
+        })
+    })
+
+    function getAutoComplete() {
+            const query = $('.search-box').val();
+            
+            fetch(`http://localhost:5000/search?q=${encodeURIComponent(query.trim())}`)
+                .then((resp) => resp.json())
+                .then((data) => {
+                        $('.results').empty();
+                        for (let i = 0; i < data.length; i++) {
+                                $('.results').append(`<li>${data[i]}</li>`)
+                        }
+                    })
+    }
+</script>
