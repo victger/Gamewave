@@ -56,3 +56,25 @@ def search_autocomplete():
     suggestions = list(set([result['_source'][field] for result in response['hits']['hits']]))
 
     return suggestions
+
+@app.route('/search_date')
+def search_date():
+    specific_date = request.args.get('date')
+
+    print(specific_date)
+    
+    query = {
+        "query": {
+            "range": {
+                "Date": {
+                    "gte": specific_date,
+                    "lte": specific_date
+                }
+            }
+        }
+    }
+
+    response = es.search(index="yt_twitch", body=query)
+    data = [hit['_source'] for hit in response['hits']['hits']]
+
+    return render_template('index.html', data=data)
