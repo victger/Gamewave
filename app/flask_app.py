@@ -5,8 +5,6 @@ from app.elastic import *
 app = Flask(__name__)
 CORS(app)
 
-# Page d'accueil -> On répertorie toutes les informations de notre dataframe
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'GET':
@@ -14,15 +12,34 @@ def index():
         data = [hit['_source'] for hit in result['hits']['hits']]
         return render_template('index.html', data=data)
     
+    
 @app.route('/search')
 def search_autocomplete():
-    query = request.args["q"].lower()
+    field = request.args.get('field')
+    query = request.args.get("q").lower()
+
     tokens = query.split(" ")
 
     clauses = [
         {
-            "span_multi": {
-                "match": {"fuzzy": {"Game": {"value": i, "fuzziness": "AUTO"}}}
+            "bool": {
+                "should": [
+                    {
+                        "prefix": {
+                            field: {
+                                "value": i
+                            }
+                        }
+                    },
+                    {
+                        "fuzzy": {
+                            field: {
+                                "value": i,
+                                "fuzziness": "AUTO"
+                            }
+                        }
+                    }
+                ]
             }
         }
         for i in tokens
@@ -30,12 +47,12 @@ def search_autocomplete():
 
     payload = {
         "bool": {
-            "must": [{"span_near": {"clauses": clauses, "slop": 0, "in_order": False}}]
+            "must": clauses
         }
     }
 
-    response= es.search(index="yt_twitch", query=payload, size=100)
+    response = es.search(index="yt_twitch", query=payload, size=100)
 
-    game_suggestions= list(set([result['_source']['Game'] for result in response['hits']['hits']]))
+    suggestions = list(set([result['_source'][field] for result in response['hits']['hits']]))
 
-    return game_suggestions
+    return suggestions

@@ -1,74 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <title>GameWave</title>
-</head>
-<body>
-    <div class="container">
-        <h1>Navigating YouTube Video Game Trends</h1>
-
-        <input class="search-box">
-        <ul class="results"></ul>
-
-        <!-- Tableau des résultats -->
-        <table>
-            <thead>
-                <tr>
-                    <th>Game</th>
-                    <th>Video Title</th>
-                    <th>Channel</th>
-                    <th>Views</th>
-                    <th>Date</th>
-                    <th>Tags</th>
-                    <th>Link</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for doc in data %}
-                <tr>
-                    <td>{{ doc['Game'] }}</td>
-                    <td>{{ doc['Video title'] }}</td>
-                    <td>{{ doc['Channel'] }}</td>
-                    <td>{{ doc['Views'] }}</td>
-                    <td>{{ doc['Date'] }}</td>
-                    <td>{{ doc['Tags'] }}</td>
-                    <td><a href="{{ doc['Link'] }}" target="_blank">{{ doc['Link'] }}</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-</body>
-
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <title>GameWave</title>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Navigating YouTube Video Game Trends</h1>
+        
+            <!-- Container pour les champs de recherche -->
+            <div class="search-container">
+                <!-- Recherche pour Game -->
+                <div class="search-group">
+                    <input id="game-search" class="search-box" type="text" placeholder="Search for a game...">
+                    <ul id="game-suggestions" class="suggestions"></ul>
+                </div>
+        
+                <!-- Recherche pour Video title -->
+                <div class="search-group">
+                    <input id="video-title-search" class="search-box" type="text" placeholder="Search for a video title...">
+                    <ul id="video-title-suggestions" class="suggestions"></ul>
+                </div>
+        
+                <!-- Recherche pour Channel -->
+                <div class="search-group">
+                    <input id="channel-search" class="search-box" type="text" placeholder="Search for a channel...">
+                    <ul id="channel-suggestions" class="suggestions"></ul>
+                </div>
+            </div>
+        
+            <!-- Tableau des résultats -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Game</th>
+                        <th>Video title</th>
+                        <th>Channel</th>
+                        <th>Views</th>
+                        <th>Date</th>
+                        <th>Tags</th>
+                        <th>Link</th>
+                    </tr>
+                </thead>
+                <tbody id="results-table">
+                    {% for doc in data %}
+                    <tr>
+                        <td>{{ doc['Game'] }}</td>
+                        <td>{{ doc['Video title'] }}</td>
+                        <td>{{ doc['Channel'] }}</td>
+                        <td>{{ doc['Views'] }}</td>
+                        <td>{{ doc['Date'] }}</td>
+                        <td>
+                            {% for tag in doc['Tags'] %}
+                                <button class="tag-info" disabled>{{ tag }}</button>
+                            {% endfor %}
+                        </td>
+                        <td><a href="{{ doc['Link'] }}" target="_blank">{{ doc['Link'] }}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </body>
 </html>
-
+    
 <script>
-
     $(document).ready(function() {
-        let debounce;
-        $('.search-box').on('keydown', function (e) { 
-        clearTimeout(debounce)
-        debounce = setTimeout(() => {
-                getAutoComplete();  
-        }, 300);
-        })
-    })
 
-    function getAutoComplete() {
-            const query = $('.search-box').val();
-            
-            fetch(`http://localhost:5000/search?q=${encodeURIComponent(query.trim())}`)
+        // Utilise une fonction générale pour gérer les événements de chaque champ de recherche
+        setupAutocomplete("#game-search", "#game-suggestions", "Game");
+        setupAutocomplete("#video-title-search", "#video-title-suggestions", "Video title");
+        setupAutocomplete("#channel-search", "#channel-suggestions", "Channel");
+
+        function setupAutocomplete(inputSelector, suggestionSelector, field) {
+            let debounce;
+            $(inputSelector).on('input', function () { 
+                clearTimeout(debounce);
+                debounce = setTimeout(() => {
+                    getAutoComplete($(inputSelector).val().trim(), field, suggestionSelector);  
+                }, 300);
+            });
+
+            // Lorsqu'une suggestion est cliquée, on la place dans la boîte de recherche
+            $(document).on('click', suggestionSelector + ' li', function() {
+                $(inputSelector).val($(this).text());
+                $(suggestionSelector).empty().hide(); // Cache le menu après sélection
+            });
+        }
+
+        function getAutoComplete(query, field, suggestionSelector) {
+            if (query === "") {
+                $(suggestionSelector).empty().hide(); // Cache le menu si le champ est vide
+                return;
+            }
+
+            fetch(`http://localhost:5000/search?field=${field}&q=${encodeURIComponent(query)}`)
                 .then((resp) => resp.json())
                 .then((data) => {
-                        $('.results').empty();
-                        for (let i = 0; i < data.length; i++) {
-                                $('.results').append(`<li>${data[i]}</li>`)
-                        }
-                    })
-    }
+                    console.log(data);
+                    $(suggestionSelector).empty().show(); // Vide et affiche le menu des suggestions
+                    for (let i = 0; i < data.length; i++) {
+                        $(suggestionSelector).append(`<li>${data[i]}</li>`);
+                    }
+                });
+        }
+    });
 </script>

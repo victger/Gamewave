@@ -22,10 +22,10 @@ h1 {
 
 /* Réorganisation de la barre de recherche */
 .search-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
+    display: flex;  /* Permet d'aligner les éléments côte à côte */
+    justify-content: space-between; /* Ajoute un espacement égal entre les champs */
+    gap: 20px;  /* Espace entre chaque champ de recherche */
+    margin-bottom: 20px; /* Espace entre la recherche et les résultats */
 }
 
 input[type="text"] {
@@ -111,4 +111,60 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+/* Style général pour la boîte de recherche */
+.search-box {
+    width: 300px;
+    padding: 10px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+/* Style pour la liste de suggestions avec défilement */
+.suggestions {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+    width: 300px; /* Aligné avec la largeur de la boîte de recherche */
+    position: absolute;
+    z-index: 100;
+    display: none;
+    max-height: 150px; /* Limite la hauteur à 150px */
+    overflow-y: auto;  /* Active le défilement si le contenu dépasse la hauteur */
+}
+
+.suggestions li {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.suggestions li:hover {
+    background-color: #f0f0f0;
+}
+
+.container {
+    position: relative;
+}
+
+.tag-info {
+    background-color: #f0f0f0;  /* Couleur de fond douce */
+    border: 1px solid #ccc;     /* Bordure gris clair */
+    border-radius: 5px;         /* Coins arrondis */
+    padding: 5px 10px;          /* Espacement intérieur */
+    margin: 2px;                /* Espacement entre les boutons */
+    font-size: 14px;            /* Taille de police */
+    color: #333;                /* Couleur du texte */
+    cursor: default;            /* Pas de curseur main, car non cliquable */
+    user-select: none;          /* Empêche la sélection du texte */
+}
+
+.tag-info:hover {
+    background-color: #e0e0e0;  /* Légère modification du fond au survol */
+}
+
+.tag-info:disabled {
+    opacity: 0.6;               /* Réduit l'opacité pour indiquer qu'il est désactivé */
 }

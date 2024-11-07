@@ -5,7 +5,9 @@ from elasticsearch.helpers import bulk
 def clean_views(views_str: str):
     views_str= views_str.replace('k', '000').replace('M', '000000')
     views_int= int(re.sub(r'[^\d]', '', views_str))
-    return views_int
+    formatted_views = '{:,.0f}'.format(views_int).replace(',', ' ')
+
+    return formatted_views
 
 def clean_date(date_str: str):
     today = datetime.today()
