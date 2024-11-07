@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+        <script src="{{ url_for('static', filename='js/datepicker.js') }}"></script>
+
         <title>GameWave</title>
     </head>
     <body>
@@ -32,6 +40,10 @@
                     <ul id="channel-suggestions" class="suggestions"></ul>
                 </div>
             </div>
+
+            <!-- Datepicker -->
+
+            <input type="text" id="datepicker" placeholder="Select a date range">
         
             <!-- Tableau des résultats -->
             <table>
@@ -67,46 +79,3 @@
         </div>
     </body>
 </html>
-    
-<script>
-    $(document).ready(function() {
-
-        // Utilise une fonction générale pour gérer les événements de chaque champ de recherche
-        setupAutocomplete("#game-search", "#game-suggestions", "Game");
-        setupAutocomplete("#video-title-search", "#video-title-suggestions", "Video title");
-        setupAutocomplete("#channel-search", "#channel-suggestions", "Channel");
-
-        function setupAutocomplete(inputSelector, suggestionSelector, field) {
-            let debounce;
-            $(inputSelector).on('input', function () { 
-                clearTimeout(debounce);
-                debounce = setTimeout(() => {
-                    getAutoComplete($(inputSelector).val().trim(), field, suggestionSelector);  
-                }, 300);
-            });
-
-            // Lorsqu'une suggestion est cliquée, on la place dans la boîte de recherche
-            $(document).on('click', suggestionSelector + ' li', function() {
-                $(inputSelector).val($(this).text());
-                $(suggestionSelector).empty().hide(); // Cache le menu après sélection
-            });
-        }
-
-        function getAutoComplete(query, field, suggestionSelector) {
-            if (query === "") {
-                $(suggestionSelector).empty().hide(); // Cache le menu si le champ est vide
-                return;
-            }
-
-            fetch(`http://localhost:5000/search?field=${field}&q=${encodeURIComponent(query)}`)
-                .then((resp) => resp.json())
-                .then((data) => {
-                    console.log(data);
-                    $(suggestionSelector).empty().show(); // Vide et affiche le menu des suggestions
-                    for (let i = 0; i < data.length; i++) {
-                        $(suggestionSelector).append(`<li>${data[i]}</li>`);
-                    }
-                });
-        }
-    });
-</script>
