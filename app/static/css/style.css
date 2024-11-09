@@ -168,3 +168,32 @@ a:hover {
 .tag-info:disabled {
     opacity: 0.6;               /* Réduit l'opacité pour indiquer qu'il est désactivé */
 }
+
+/* Styling the custom container for the datepicker and button */
+.datepicker-container {
+    position: relative;  /* To position the button inside the container */
+    display: inline-block;  /* To make it inline with other elements if needed */
+}
+
+/* Position the button at the top-left corner of the datepicker */
+#unique-date-btn {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 1000; /* Ensure the button stays on top */
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#unique-date-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Ensure the datepicker container itself has some padding to avoid overlap with button */
+.ui-datepicker {
+    padding-top: 40px;  /* Give some space for the button */
+}

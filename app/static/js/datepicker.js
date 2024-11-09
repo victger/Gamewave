@@ -1,28 +1,36 @@
 $(function() {
     $("#datepicker").datepicker({
         numberOfMonths: 2,
-        dateFormat: 'yy-mm-dd',  // Spécifie le format de la date
+        dateFormat: 'yy-mm-dd',  // Format de la date
         onSelect: function(selectedDate) {
-            if (!$(this).data().datepicker.first) {
-                $(this).data().datepicker.inline = true;
-                $(this).data().datepicker.first = selectedDate;
+            var datepickerData = $(this).data().datepicker;
+
+            if (!datepickerData.first) {
+                datepickerData.inline = true;
+                datepickerData.first = selectedDate;
             } else {
-                if (selectedDate > $(this).data().datepicker.first) {
-                    $(this).val($(this).data().datepicker.first + " - " + selectedDate);
+                if (selectedDate > datepickerData.first) {
+                    $(this).val(datepickerData.first + " - " + selectedDate);
                 } else {
-                    $(this).val(selectedDate + " - " + $(this).data().datepicker.first);
+                    $(this).val(selectedDate + " - " + datepickerData.first);
                 }
-                $(this).data().datepicker.inline = false;
+                datepickerData.inline = false;
             }
         },
         onClose: function() {
-            delete $(this).data().datepicker.first;
-            $(this).data().datepicker.inline = false;
+            var datepickerData = $(this).data().datepicker;
+            delete datepickerData.first;
+            datepickerData.inline = false;
         }
     });
 });
 
+// Fonction pour rechercher par date
 function search_date() {
     let specific_date = document.getElementById("datepicker").value;
-    window.location.href = `http://localhost:5000/search_date?date=${encodeURIComponent(specific_date)}`;
+    if (specific_date) {
+        window.location.href = `http://localhost:5000/search_date?date=${encodeURIComponent(specific_date)}`;
+    } else {
+        alert("Please select a date first.");
+    }
 }
