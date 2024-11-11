@@ -26,30 +26,37 @@
                     <input id="game-search" class="search-box" type="text" placeholder="Search for a game...">
                     <ul id="game-suggestions" class="suggestions"></ul>
                 </div>
-        
+                
                 <!-- Recherche pour Video title -->
                 <div id="video-title-search-container" class="search-group" style="display: none;">
                     <input id="video-title-search" class="search-box" type="text" placeholder="Search for a video title...">
                     <ul id="video-title-suggestions" class="suggestions"></ul>
                 </div>
-        
+                
                 <!-- Recherche pour Channel -->
                 <div id="channel-search-container" class="search-group" style="display: none;">
                     <input id="channel-search" class="search-box" type="text" placeholder="Search for a channel...">
                     <ul id="channel-suggestions" class="suggestions"></ul>
                 </div>
-
+                
                 <!-- Datepicker -->
                 <div id="date-search-container" class="search-group" style="display: none;">
                     <input type="text" id="datepicker" class="datetimepicker-input" placeholder="Select a date range">
-                    <button id="search-btn" onclick="search_date()">Search</button>
                 </div>
-
+                
                 <!-- Recherche pour Tags -->
                 <div id="tags-search-container" class="search-group" style="display: none;">
                     <input id="tags-search" class="search-box" type="text" placeholder="Search for a tag...">
                     <ul id="tags-suggestions" class="suggestions"></ul>
                 </div>
+                
+                <!-- Bouton unique "Search" -->
+                <button id="search-btn" onclick="search()">Search</button>
+
+                <div id="active-queries">
+                    <!-- Les boutons de requêtes actives seront ajoutés ici dynamiquement -->
+                </div>
+                
             </div>
         
             <!-- Tableau des résultats -->

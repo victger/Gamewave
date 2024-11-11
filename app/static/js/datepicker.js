@@ -8,16 +8,16 @@ $(function() {
             'This Month': [moment().startOf('month'), moment().endOf('month')],
         },
         "opens": "left",
-        "autoUpdateInput": false, // L'entrée ne sera pas mise à jour automatiquement
+        "autoUpdateInput": false,
     });
 
     $('#datepicker').on('apply.daterangepicker', function(ev, picker) {
-        // Mise à jour du champ de saisie avec le format YYYY-MM-DD
+
         $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
     });
 
     $('#datepicker').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val(''); // Vide le champ si annulé
+        $(this).val('');
     });
 });
 

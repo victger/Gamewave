@@ -67,24 +67,44 @@ def autocomplete():
 
     return suggestions
 
-@app.route('/search_date')
-def search_date():
+@app.route('/search')
+def search():
+    game = request.args.get('game')
+    video_title = request.args.get('video_title')
+    channel = request.args.get('channel')
     date_range = request.args.get('date')
+    tags = request.args.get('tags')
 
-    start_date, end_date = date_range.split(' - ')
-    
     query = {
-        "query": {  
+        "bool": {
+            "must": []
+        }
+    }
+
+    if game:
+        query["bool"]["must"].append({"match": {"Game": game}})
+    
+    if video_title:
+        query["bool"]["must"].append({"match": {"Video Title": video_title}})
+    
+    if channel:
+        query["bool"]["must"].append({"match": {"Channel": channel}})
+    
+    if date_range:
+        start_date, end_date = date_range.split(' - ')
+        query["bool"]["must"].append({
             "range": {
                 "Date": {
                     "gte": start_date,
                     "lte": end_date
                 }
             }
-        }
-    }
+        })
+    
+    if tags:
+        query["bool"]["must"].append({"match": {"Tags": tags}})
 
-    response = es.search(index="yt_twitch", body=query)
+    response = es.search(index="yt_twitch", query=query, size=100)
     data = [hit['_source'] for hit in response['hits']['hits']]
 
     return render_template('index.html', data=data)
