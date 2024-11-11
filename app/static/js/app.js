@@ -55,7 +55,7 @@ $(document).ready(function() {
             return;
         }
 
-        fetch(`/search?field=${field}&q=${encodeURIComponent(query)}`)
+        fetch(`/autocompletion?field=${field}&q=${encodeURIComponent(query)}`)
             .then((resp) => resp.json())
             .then((data) => {
                 $(suggestionSelector).empty().show(); // Vide et affiche le menu des suggestions
