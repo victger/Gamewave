@@ -1,31 +1,27 @@
 $(function() {
-    $("#datepicker").datepicker({
-        numberOfMonths: 2,
-        dateFormat: 'yy-mm-dd',  // Format de la date
-        onSelect: function(selectedDate) {
-            var datepickerData = $(this).data().datepicker;
-
-            if (!datepickerData.first) {
-                datepickerData.inline = true;
-                datepickerData.first = selectedDate;
-            } else {
-                if (selectedDate > datepickerData.first) {
-                    $(this).val(datepickerData.first + " - " + selectedDate);
-                } else {
-                    $(this).val(selectedDate + " - " + datepickerData.first);
-                }
-                datepickerData.inline = false;
-            }
+    $('#datepicker').daterangepicker({
+        ranges: {
+            'Today': [moment(), moment()],
+            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            'This Month': [moment().startOf('month'), moment().endOf('month')],
         },
-        onClose: function() {
-            var datepickerData = $(this).data().datepicker;
-            delete datepickerData.first;
-            datepickerData.inline = false;
-        }
+        "opens": "left",
+        "autoUpdateInput": false, // L'entrée ne sera pas mise à jour automatiquement
+    });
+
+    $('#datepicker').on('apply.daterangepicker', function(ev, picker) {
+        // Mise à jour du champ de saisie avec le format YYYY-MM-DD
+        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+    });
+
+    $('#datepicker').on('cancel.daterangepicker', function(ev, picker) {
+        $(this).val(''); // Vide le champ si annulé
     });
 });
 
-// Fonction pour rechercher par date
+
 function search_date() {
     let specific_date = document.getElementById("datepicker").value;
     if (specific_date) {

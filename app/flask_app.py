@@ -16,8 +16,8 @@ def index():
 @app.route('/search')
 def search_autocomplete():
     field = request.args.get('field')
-    query = request.args.get("q").lower()
 
+    query = request.args.get("q").lower()
     tokens = query.split(" ")
 
     clauses = [
@@ -53,22 +53,32 @@ def search_autocomplete():
 
     response = es.search(index="yt_twitch", query=payload, size=100)
 
-    suggestions = list(set([result['_source'][field] for result in response['hits']['hits']]))
+    if field == "Tags":
+        all_tags = []
+        for result in response['hits']['hits']:
+            tags = result['_source'][field]
+            for tag in tags:
+                clean_tag = tag.strip().lower()
+                if any(token in clean_tag for token in tokens):
+                    all_tags.append(tag)
+        suggestions = list(set(all_tags))
+    else:
+        suggestions = list(set([result['_source'][field] for result in response['hits']['hits']]))
 
     return suggestions
 
 @app.route('/search_date')
 def search_date():
-    specific_date = request.args.get('date')
+    date_range = request.args.get('date')
 
-    print(specific_date)
+    start_date, end_date = date_range.split(' - ')
     
     query = {
-        "query": {
+        "query": {  
             "range": {
                 "Date": {
-                    "gte": specific_date,
-                    "lte": specific_date
+                    "gte": start_date,
+                    "lte": end_date
                 }
             }
         }

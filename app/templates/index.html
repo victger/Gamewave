@@ -1,17 +1,16 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
     <head>
-
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
-        <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-        <script src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"></script>
-        <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css">
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
         <script src="{{ url_for('static', filename='js/datepicker.js') }}"></script>
 
         <title>GameWave</title>
@@ -19,43 +18,50 @@
     <body>
         <div class="container">
             <h1>Navigating YouTube Video Game Trends</h1>
-        
-            <!-- Container pour les champs de recherche -->
-            <div class="search-container">
+
+            <!-- Recherche pour chaque colonne -->
+            <div class="search-container" id="search-fields">
                 <!-- Recherche pour Game -->
-                <div class="search-group">
+                <div id="game-search-container" class="search-group" style="display: none;">
                     <input id="game-search" class="search-box" type="text" placeholder="Search for a game...">
                     <ul id="game-suggestions" class="suggestions"></ul>
                 </div>
         
                 <!-- Recherche pour Video title -->
-                <div class="search-group">
+                <div id="video-title-search-container" class="search-group" style="display: none;">
                     <input id="video-title-search" class="search-box" type="text" placeholder="Search for a video title...">
                     <ul id="video-title-suggestions" class="suggestions"></ul>
                 </div>
         
                 <!-- Recherche pour Channel -->
-                <div class="search-group">
+                <div id="channel-search-container" class="search-group" style="display: none;">
                     <input id="channel-search" class="search-box" type="text" placeholder="Search for a channel...">
                     <ul id="channel-suggestions" class="suggestions"></ul>
                 </div>
-            </div>
 
-            <!-- Datepicker -->
-             
-            <input type="text" id="datepicker" class=" datetimepicker-input" placeholder="Select a date range">
-            <button id="search-btn" onclick= "search_date()">Search</button>
+                <!-- Datepicker -->
+                <div id="date-search-container" class="search-group" style="display: none;">
+                    <input type="text" id="datepicker" class="datetimepicker-input" placeholder="Select a date range">
+                    <button id="search-btn" onclick="search_date()">Search</button>
+                </div>
+
+                <!-- Recherche pour Tags -->
+                <div id="tags-search-container" class="search-group" style="display: none;">
+                    <input id="tags-search" class="search-box" type="text" placeholder="Search for a tag...">
+                    <ul id="tags-suggestions" class="suggestions"></ul>
+                </div>
+            </div>
         
             <!-- Tableau des résultats -->
             <table>
                 <thead>
                     <tr>
-                        <th>Game</th>
-                        <th>Video title</th>
-                        <th>Channel</th>
+                        <th class="searchable-column" data-search="game">Game</th>
+                        <th class="searchable-column" data-search="video-title">Video title</th>
+                        <th class="searchable-column" data-search="channel">Channel</th>
                         <th>Views</th>
-                        <th>Date</th>
-                        <th>Tags</th>
+                        <th class="searchable-column" data-search="date">Date</th>
+                        <th class="searchable-column" data-search="tags">Tags</th>
                         <th>Link</th>
                     </tr>
                 </thead>
