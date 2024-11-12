@@ -9,6 +9,8 @@ $(function() {
         },
         "opens": "left",
         "autoUpdateInput": false,
+        "showDropdowns": true, // Ajoute des sélecteurs pour mois et années
+        "autoApply": true,     // Applique directement la sélection
     });
 
     $('#datepicker').on('apply.daterangepicker', function(ev, picker) {
@@ -19,4 +21,7 @@ $(function() {
     $('#datepicker').on('cancel.daterangepicker', function(ev, picker) {
         $(this).val('');
     });
+
+    // Ajout pour corriger la superposition avec d'autres éléments de l'interface
+    $('#datepicker').data('daterangepicker').container.css('z-index', 9999);  // S'assure que le datepicker est toujours au premier plan
 });

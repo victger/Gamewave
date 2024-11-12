@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from urllib.parse import parse_qs, urlparse
 from flask_cors import CORS
 from app.elastic import *
 
@@ -11,8 +12,6 @@ def index():
         result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 2000)
         data = [hit['_source'] for hit in result['hits']['hits']]
         return render_template('index.html', data=data)
-    
-from urllib.parse import parse_qs, urlparse
 
 @app.route('/autocompletion')
 def autocomplete():
@@ -21,11 +20,11 @@ def autocomplete():
     parsed_url = urlparse(url)
     query_params = parse_qs(parsed_url.query)
 
-    current_game = query_params.get('game', [None])[0]
-    current_video_title = query_params.get('video_title', [None])[0]
-    current_channel = query_params.get('channel', [None])[0]
-    current_date_range = query_params.get('date', [None])[0]
-    current_tags = query_params.get('tags', [None])[0]
+    current_game = query_params.get('Game', [None])[0]
+    current_video_title = query_params.get('Video title', [None])[0]
+    current_channel = query_params.get('Channel', [None])[0]
+    current_date_range = query_params.get('Date', [None])[0]
+    current_tags = query_params.get('Tags', [None])[0]
 
     field = request.args.get('field')
     query = request.args.get("q").lower()
@@ -101,11 +100,11 @@ def autocomplete():
 
 @app.route('/search')
 def search():
-    game = request.args.get('game')
-    video_title = request.args.get('video_title')
-    channel = request.args.get('channel')
-    date_range = request.args.get('date')
-    tags = request.args.get('tags')
+    game = request.args.get('Game')
+    video_title = request.args.get('Video title')
+    channel = request.args.get('Channel')
+    date_range = request.args.get('Date')
+    tags = request.args.get('Tags')
 
     query = {
         "bool": {
@@ -138,7 +137,6 @@ def search():
 
     response = es.search(index="yt_twitch", query=query, size=2000)
 
-    print(response)
     data = [hit['_source'] for hit in response['hits']['hits']]
 
     return render_template('index.html', data=data)

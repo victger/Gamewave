@@ -5,16 +5,16 @@ from app.elastic import es
 from app.elastic_utils import insert_data, process_data
 from app.flask_app import app
 
-# driver = launch_driver()
+driver = launch_driver()
 
-# data_twitch = scrape_twitch(driver)
-# data_youtube = scrape_youtube(driver, data_twitch)
+data_twitch = scrape_twitch(driver)
+data_youtube = scrape_youtube(driver, data_twitch)
 
-# driver.quit()
+driver.quit()
 
-# process_data(data_youtube)
+process_data(data_youtube)
 
-# final_data = data_youtube.to_dict('records')
-# insert_data(es, final_data)
+final_data = data_youtube.to_dict('records')
+insert_data(es, final_data)
     
-app.run(debug=True)
+app.run()
