@@ -160,3 +160,34 @@ a:hover {
 .tag-info:disabled {
     opacity: 0.6;
 }
+
+/* Curseur en forme de doigt pour les colonnes requêtable */
+.searchable-column {
+    cursor: pointer; /* Transforme le curseur en doigt */
+}
+
+/* Change la couleur du texte lorsqu'on passe la souris sur les colonnes requêtable */
+.searchable-column:hover {
+    color: #007BFF; /* Couleur de survol */
+}
+
+/* Ajouter l'animation glissante pour l'affichage et le masquage des champs de recherche */
+.search-group {
+    display: none; /* Cache les champs de recherche par défaut */
+}
+
+#sort-asc, #sort-desc {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+#sort-asc:hover, #sort-desc:hover {
+    background-color: #ddd;
+}
+
+#sort-asc:active, #sort-desc:active {
+    background-color: #ccc;
+}

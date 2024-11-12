@@ -12,7 +12,7 @@ $(function() {
     });
 
     $('#datepicker').on('apply.daterangepicker', function(ev, picker) {
-
+        toggleSearchButton();
         $(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
     });
 
@@ -20,13 +20,3 @@ $(function() {
         $(this).val('');
     });
 });
-
-
-function search_date() {
-    let specific_date = document.getElementById("datepicker").value;
-    if (specific_date) {
-        window.location.href = `http://localhost:5000/search_date?date=${encodeURIComponent(specific_date)}`;
-    } else {
-        alert("Please select a date first.");
-    }
-}

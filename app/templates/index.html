@@ -19,7 +19,6 @@
         <div class="container">
             <h1>Navigating YouTube Video Game Trends</h1>
 
-            <!-- Recherche pour chaque colonne -->
             <div class="search-container" id="search-fields">
                 <!-- Recherche pour Game -->
                 <div id="game-search-container" class="search-group" style="display: none;">
@@ -51,7 +50,7 @@
                 </div>
                 
                 <!-- Bouton unique "Search" -->
-                <button id="search-btn" onclick="search()">Search</button>
+                <button id="search-btn" onclick="search()" style="display: none;">Search</button>
 
                 <div id="active-queries">
                     <!-- Les boutons de requêtes actives seront ajoutés ici dynamiquement -->
@@ -66,7 +65,11 @@
                         <th class="searchable-column" data-search="game">Game</th>
                         <th class="searchable-column" data-search="video-title">Video title</th>
                         <th class="searchable-column" data-search="channel">Channel</th>
-                        <th>Views</th>
+                        <th>
+                            Views
+                            <button id="sort-asc" onclick="sortTable('asc')">⬆️</button>
+                            <button id="sort-desc" onclick="sortTable('desc')">⬇️</button>
+                        </th>                        
                         <th class="searchable-column" data-search="date">Date</th>
                         <th class="searchable-column" data-search="tags">Tags</th>
                         <th>Link</th>

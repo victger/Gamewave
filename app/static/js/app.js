@@ -1,33 +1,19 @@
 $(document).ready(function() {
-
     $('.searchable-column').on('click', function() {
         const searchField = $(this).data('search');
+        const searchContainer = $(`#${searchField}-search-container`);
 
-        $('.search-group').hide();
+        $('.search-group').not(searchContainer).slideUp(300);
 
-        switch (searchField) {
-            case 'game':
-                $('#game-search-container').show();
-                break;
-            case 'video-title':
-                $('#video-title-search-container').show();
-                break;
-            case 'channel':
-                $('#channel-search-container').show();
-                break;
-            case 'date':
-                $('#date-search-container').show();
-                break;
-            case 'tags':
-                $('#tags-search-container').show();
-                break;
-        }
+        searchContainer.slideToggle(300);
     });
 
     setupAutocomplete('#game-search', '#game-suggestions', 'Game');
     setupAutocomplete('#video-title-search', '#video-title-suggestions', 'Video title');
     setupAutocomplete('#channel-search', '#channel-suggestions', 'Channel');
     setupAutocomplete('#tags-search', '#tags-suggestions', 'Tags');
+
+    $('#game-search, #video-title-search, #channel-search, #tags-search, #datepicker').on('input change', toggleSearchButton);
 
     function setupAutocomplete(inputSelector, suggestionSelector, field) {
         let debounce;
@@ -63,13 +49,27 @@ $(document).ready(function() {
 
 let activeQueries = {};
 
-
 window.onload = function() {
     const params = new URLSearchParams(window.location.search);
     params.forEach((value, key) => {
         activeQueries[key] = value;
     });
     updateActiveQueries();
+};
+
+function toggleSearchButton() {
+    const game = document.getElementById("game-search").value.trim();
+    const videoTitle = document.getElementById("video-title-search").value.trim();
+    const channel = document.getElementById("channel-search").value.trim();
+    const dateRange = document.getElementById("datepicker").value.trim();
+    const tags = document.getElementById("tags-search").value.trim();
+
+    // Vérifier si l'un des champs est rempli
+    if (game || videoTitle || channel || dateRange || tags) {
+        document.getElementById("search-btn").style.display = "block";
+    } else {
+        document.getElementById("search-btn").style.display = "none";
+    }
 };
 
 function search() {
@@ -114,15 +114,6 @@ function performSearch() {
     let url = `http://localhost:5000/search?${searchParams}`;
 
     window.location.href = url;
-}
-
-function search_date() {
-    let specific_date = document.getElementById("datepicker").value;
-    if (specific_date) {
-        window.location.href = `/search_date?date=${encodeURIComponent(specific_date)}`;
-    } else {
-        alert("Please select a date first.");
-    }
 }
 
 function sortTable(order) {
