@@ -16,5 +16,6 @@ process_data(data_youtube)
 
 final_data = data_youtube.to_dict('records')
 insert_data(es, final_data)
-    
-app.run()
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

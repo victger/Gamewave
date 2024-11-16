@@ -3,18 +3,13 @@ import pandas as pd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import sys
 
 def scrape_youtube(driver, data_twitch):
 
     visible = EC.visibility_of_element_located
     data_youtube=pd.DataFrame()
 
-    # Cette boucle permet de parcourir tous les jeux contenus dans notre dataframe Twitch sur Youtube. Il faut changer le paramètre len(data_twitch) pour echercher moins de jeux
-
     for k in range(0,len(data_twitch)):
-
-        # A chaque itération, on initialise nos tableaux pour concaténer nos informations dans la dataframe sans doublons
 
         game= []
         tags= []
@@ -24,26 +19,24 @@ def scrape_youtube(driver, data_twitch):
         views= []
         date= []
 
-        # Navigation vers le ième jeu de notre datafrme Twitch
-
         driver.get('https://www.youtube.com/results?search_query={}'.format(str(data_twitch["Game"][k])))
         
         time.sleep(1)
 
-        # Acceptation des cookies Youtube à la première itération
+        # Cookies handling
 
         if k==0:
             button = driver.find_element(By.XPATH,"//*[@id='content']/div[2]/div[6]/div[1]/ytd-button-renderer[1]/yt-button-shape/button/yt-touch-feedback-shape/div/div[2]")
             button.click()
 
-        # On clique sur la carte de jeu Youtube si elle est disponible, sinon on passe à la prochaine itération.
+        # Click on Youtube card
 
         try:
             driver.find_element(By.XPATH, "//*[@id='watch-card-subtitle']").click()
         except:
             continue
 
-        # On clique sur l'onglet "Récentes" dans la carte du jeu
+        # Click on "Recent"
 
         recent_tab_position= 4
         recent_tab = WebDriverWait(driver, 5).until(visible((By.XPATH, f"(//tp-yt-paper-tab[@role='tab'])[{recent_tab_position}]")))
@@ -51,7 +44,7 @@ def scrape_youtube(driver, data_twitch):
 
         time.sleep(2)
 
-        # On scrolle suffisamment dans la page pour scrapper 100 vidéos de la carte de jeu dans l'onglet "Récentes"
+        # Scrolling to get 100 videos
 
         height = driver.execute_script('''var body = document.body,
                                             html = document.documentElement;
@@ -63,8 +56,7 @@ def scrape_youtube(driver, data_twitch):
 
         time.sleep(2)
 
-        # On récupère le titre, la chaîne, le nombre de vues, la date, le jeu ainsi que le lien de la vidéo concernée
-
+        # Get Youtube videos data
         
         total_grid= driver.find_element(By.XPATH, "//div[contains(@id,'items') and contains(@class, 'style-scope ytd-grid-renderer')]")
 
@@ -79,8 +71,6 @@ def scrape_youtube(driver, data_twitch):
 
             views.append(metadata[0].text.split('\n')[0])
             date.append(metadata[0].text.split('\n')[1])
-
-            # On crée une dataframe temporaire contenant les informations de la vidéo en cours de scraping et on concatène toutes les dataframes temporaires pour obtenir la dataframe finale.
 
             game.append(data_twitch["Game"][k])
             tags.append(data_twitch["Tags"][k])

@@ -1,21 +1,18 @@
 from flask import Flask, render_template, request
 from urllib.parse import parse_qs, urlparse
 from flask_cors import CORS
-from app.elastic import *
+from app.elastic import search_all_data, search_with_filters, autocomplete_suggestions
 
 app = Flask(__name__)
 CORS(app)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    if request.method == 'GET':
-        result = es.search(index="yt_twitch", body={"query": {"match_all": {}}},size = 2000)
-        data = [hit['_source'] for hit in result['hits']['hits']]
-        return render_template('index.html', data=data)
+    data = search_all_data("yt_twitch")
+    return render_template('index.html', data=data)
 
 @app.route('/autocompletion')
 def autocomplete():
-
     url = request.headers.get("Referer")
     parsed_url = urlparse(url)
     query_params = parse_qs(parsed_url.query)
@@ -30,59 +27,20 @@ def autocomplete():
     query = request.args.get("q").lower()
     tokens = query.split(" ")
 
-    query_body = {
-        "bool": {
-            "must": []
-        }
-    }
-
+    filters = []
     if current_game:
-        query_body["bool"]["must"].append({"match": {"Game": current_game}})
+        filters.append({"match": {"Game": current_game}})
     if current_video_title:
-        query_body["bool"]["must"].append({"match": {"Video title": current_video_title}})
+        filters.append({"match": {"Video title": current_video_title}})
     if current_channel:
-        query_body["bool"]["must"].append({"match": {"Channel": current_channel}})
+        filters.append({"match": {"Channel": current_channel}})
     if current_date_range:
         start_date, end_date = current_date_range.split(' - ')
-        query_body["bool"]["must"].append({
-            "range": {
-                "Date": {
-                    "gte": start_date,
-                    "lte": end_date
-                }
-            }
-        })
+        filters.append({"range": {"Date": {"gte": start_date, "lte": end_date}}})
     if current_tags:
-        query_body["bool"]["must"].append({"match": {"Tags": current_tags}})
+        filters.append({"match": {"Tags": current_tags}})
 
-    autocomplete_clauses = [
-        {
-            "bool": {
-                "should": [
-                    {
-                        "prefix": {
-                            field: {
-                                "value": i
-                            }
-                        }
-                    },
-                    {
-                        "fuzzy": {
-                            field: {
-                                "value": i,
-                                "fuzziness": "AUTO"
-                            }
-                        }
-                    }
-                ]
-            }
-        }
-        for i in tokens
-    ]
-
-    query_body["bool"]["must"].extend(autocomplete_clauses)
-
-    response = es.search(index="yt_twitch", query=query_body, size=2000)
+    response = autocomplete_suggestions("yt_twitch", field, tokens, filters)
 
     if field == "Tags":
         all_tags = []
@@ -106,37 +64,19 @@ def search():
     date_range = request.args.get('Date')
     tags = request.args.get('Tags')
 
-    query = {
-        "bool": {
-            "must": []
-        }
-    }
-
+    filters = []
     if game:
-        query["bool"]["must"].append({"match": {"Game": game}})
-    
+        filters.append({"match": {"Game": game}})
     if video_title:
-        query["bool"]["must"].append({"match_phrase": {"Video title": video_title}})
-    
+        filters.append({"match_phrase": {"Video title": video_title}})
     if channel:
-        query["bool"]["must"].append({"match": {"Channel": channel}})
-    
+        filters.append({"match": {"Channel": channel}})
     if date_range:
         start_date, end_date = date_range.split(' - ')
-        query["bool"]["must"].append({
-            "range": {
-                "Date": {
-                    "gte": start_date,
-                    "lte": end_date
-                }
-            }
-        })
-    
+        filters.append({"range": {"Date": {"gte": start_date, "lte": end_date}}})
     if tags:
-        query["bool"]["must"].append({"match": {"Tags": tags}})
+        filters.append({"match": {"Tags": tags}})
 
-    response = es.search(index="yt_twitch", query=query, size=2000)
-
-    data = [hit['_source'] for hit in response['hits']['hits']]
-
+    data = search_with_filters("yt_twitch", filters)
+    
     return render_template('index.html', data=data)
