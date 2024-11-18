@@ -3,9 +3,9 @@ $(document).ready(function() {
         const searchField = $(this).data('search');
         const searchContainer = $(`#${searchField}-search-container`);
 
-        $('.search-group').not(searchContainer).slideUp(300); 
+        $('.search-group').not(searchContainer).slideUp(300);
 
-        searchContainer.stop(true, true).slideToggle(300); 
+        searchContainer.slideToggle(300);
     });
 
     setupAutocomplete('#game-search', '#game-suggestions', 'Game');
@@ -66,9 +66,9 @@ function toggleSearchButton() {
 
     // Vérifier si l'un des champs est rempli
     if (game || videoTitle || channel || dateRange || tags) {
-        document.getElementById("search-btn").style.display = "block";  // Afficher le bouton
+        document.getElementById("search-btn").style.display = "block";
     } else {
-        document.getElementById("search-btn").style.display = "none";  // Masquer le bouton
+        document.getElementById("search-btn").style.display = "none";
     }
 };
 
@@ -79,11 +79,11 @@ function search() {
     let dateRange = document.getElementById("datepicker").value.trim();
     let tags = document.getElementById("tags-search").value.trim();
 
-    if (game) activeQueries["Game"] = game;
-    if (videoTitle) activeQueries["Video title"] = videoTitle;
-    if (channel) activeQueries["Channel"] = channel;
-    if (dateRange) activeQueries["Date"] = dateRange;
-    if (tags) activeQueries["Tags"] = tags;
+    if (game) activeQueries["game"] = game;
+    if (videoTitle) activeQueries["video_title"] = videoTitle;
+    if (channel) activeQueries["channel"] = channel;
+    if (dateRange) activeQueries["date"] = dateRange;
+    if (tags) activeQueries["tags"] = tags;
 
     updateActiveQueries();
 
