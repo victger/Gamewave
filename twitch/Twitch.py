@@ -32,4 +32,6 @@ def scrape_twitch(driver):
 
     data_twitch= pd.DataFrame(list(zip(game_title, viewers, tags)), columns=["Game", "Viewers", "Tags"])
 
+    print('Gathered data from Twitch') # Log to be improved : We have to check the coherence of data.
+
     return data_twitch

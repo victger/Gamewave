@@ -11,13 +11,13 @@ def scrape_youtube(driver, data_twitch):
 
     for k in range(0,len(data_twitch)):
 
-        game= []
+        games= []
         tags= []
-        video_title= []
-        link= []
-        channel= []
+        video_titles= []
+        links= []
+        channels= []
         views= []
-        date= []
+        dates= []
 
         driver.get('https://www.youtube.com/results?search_query={}'.format(str(data_twitch["Game"][k])))
         
@@ -59,32 +59,45 @@ def scrape_youtube(driver, data_twitch):
         # Get Youtube videos data
         
         total_grid= driver.find_element(By.XPATH, "//div[contains(@id,'items') and contains(@class, 'style-scope ytd-grid-renderer')]")
-
         grids= total_grid.find_elements(By.XPATH, ".//ytd-grid-video-renderer")
 
         for grid in grids:
 
-            video_title.append(grid.find_element(By.XPATH, ".//a[contains(@id, 'video-title')]").text)
-            link.append(grid.find_element(By.XPATH, ".//a[contains(@id, 'video-title')]").get_attribute("href"))
-            channel.append(grid.find_element(By.XPATH, ".//ytd-channel-name").text)
+            video_title= grid.find_element(By.XPATH, ".//a[contains(@id, 'video-title')]").text
+            link= grid.find_element(By.XPATH, ".//a[contains(@id, 'video-title')]").get_attribute("href")
+            channel= grid.find_element(By.XPATH, ".//ytd-channel-name").text
             metadata= grid.find_elements(By.XPATH, ".//div[contains(@id, 'metadata-line')]")
+            metadata_split= metadata[0].text.split('\n')
 
-            views.append(metadata[0].text.split('\n')[0])
-            date.append(metadata[0].text.split('\n')[1])
+            video_titles.append(video_title)
+            links.append(link)
+            channels.append(channel)
 
-            game.append(data_twitch["Game"][k])
+            if len(metadata[0].text.split('\n'))==2:
+                view= metadata_split[0]
+                date= metadata_split[1]
+                views.append(view)
+                dates.append(date)
+
+            else:
+                print(link+' video passed as it seems to be a live stream.')
+                pass
+
+            games.append(data_twitch["Game"][k])
             tags.append(data_twitch["Tags"][k])
 
         temp_df = pd.DataFrame({
-            'Game': game,
-            'Video title': video_title,
-            'Channel': channel,
+            'Game': games,
+            'Video title': video_titles,
+            'Channel': channels,
             'Views': views,
-            'Date': date,
+            'Date': dates,
             'Tags': tags,
-            'Link': link
+            'Link': links
         })
 
         data_youtube= pd.concat([data_youtube,temp_df], axis=0)
+
+        print('Gathered data from '+data_twitch["Game"][k])
 
     return data_youtube

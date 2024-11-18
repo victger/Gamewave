@@ -32,13 +32,10 @@ def clean_date(date_str: str):
         except ValueError:
             return None
 
-
-
 def process_data(data):
     data["Views"]= data["Views"].apply(clean_views)
     data["Date"]= data["Date"].apply(clean_date)
     return data
-
 
 def generate_data(data):
     for docu in data:

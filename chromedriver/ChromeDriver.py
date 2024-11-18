@@ -2,9 +2,6 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 def launch_driver():
     # Initialisation des options pour Chrome
@@ -18,6 +15,7 @@ def launch_driver():
     chrome_options.add_argument("--window-size=1920x1080")
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--disable-infobars")
+    chrome_options.add_experimental_option('prefs', {'intl.accept_languages': 'fr,fr_FR'})
 
     # Démarrer le driver avec WebDriver Manager
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)

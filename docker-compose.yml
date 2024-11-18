@@ -10,12 +10,12 @@ services:
       - xpack.security.enabled=false
     volumes:
       - esdata:/usr/share/elasticsearch/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -s http://elasticsearch:9200"]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
+    # healthcheck:
+    #   test: ["CMD-SHELL", "curl -s http://elasticsearch:9200"]
+    #   interval: 10s
+    #   retries: 5
+    #   start_period: 30s
+    #   timeout: 10s
 
   app:
     build: .
@@ -24,9 +24,9 @@ services:
       - .:/app
     ports:
       - "5000:5000"
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
+    # depends_on:
+    #   elasticsearch:
+    #     condition: service_healthy
     environment:
       - PYTHONUNBUFFERED=1
 
