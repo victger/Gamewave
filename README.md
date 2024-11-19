@@ -1,127 +1,219 @@
-# Trend_YT_Twitch
-Dans le cadre de ce projet, nous avons été chargés de concevoir une application web en utilisant le package Flask. L'objectif est de récupérer des données sur le web, en utilisant des données scrapées.
+# Project README: YouTube & Twitch Scraping Application with Elasticsearch and Flask
 
-Nous devons ensuite afficher ces données de manière optimale, en utilisant des fonctionnalités telles qu'un moteur de recherche ou des graphiques, par exemple. Pour y parvenir, nous utiliserons la bases de données Elasticsearch.
+## Overview
 
-## Sujet du projet
-Nous avons décidé d'exploiter les données présentes dans les cartes de jeux Youtube comme montré ci-contre :
+This project is a web application designed to scrape data from YouTube and Twitch, process it, and display it via a Flask-based interface. The data is stored in an Elasticsearch index to enable advanced searching and filtering functionalities. The app supports features like search autocompletion and filtering by game, video title, channel, date, and tags.
 
-![Image montrant les cartes de jeux sur Youtube](https://zupimages.net/up/23/08/rph0.png "Carte de jeu pour le jeu vidéo Apex Legends sur Youtube")
+We decided to leverage the data available in YouTube's game cards, as shown below:
 
-En effet cet onglet permet de recenser les vidéos faites sur un jeu. Nous avons remarqué que cet onglet n'était pas bien optimisé et ne permettait pas de naviguer de façon optimale afin de trouver la vidéo qui correspond le mieux à nôtre besoin. On peut voir sur l'image suivante que l'on ne peut pas trier les vidéos par date de mise en ligne, ni nombre de vues :
+![Card games on Youtube](https://zupimages.net/up/23/08/rph0.png "Apex Legends research on Youtube")
 
-![Onglet "Récentes" de Youtube pour le jeu Apex Legends](https://zupimages.net/up/23/08/14nl.png "Onglet Récentes de Youtube pour le jeu Apex Legends")
+This tab lists videos related to a specific game. However, we noticed that this feature is not well optimized and doesn't allow for easy navigation to find the most relevant video. For instance, as shown in the image below, it's not possible to sort videos by upload date or by view count:
 
-Afin de selectionner les jeux pour lesquels nous allons récupérer les données des vidéos, nous avons voulu récupérer les 20 jeux les plus populaires du moment afin que notre projet fonctionne en temps réel et qu'il soit constamment à jour. Pour cela nous avons décidé de récupérer sur le site de streaming "Twitch" le nom des 20 jeux avec le plus de spectateurs. 
+![Recent tab in game card](https://zupimages.net/up/23/08/14nl.png "Recent tab in game card in Youtube")
 
-**Sources :** 
+To select the games for which we will collect video data, we decided to retrieve the top 20 most popular games at any given time. This allows our project to function in real-time and stay continuously up to date. To achieve this, we fetch the names of the top 20 games with the most viewers from the streaming platform "Twitch."
 
- - Youtube : https://www.youtube.com/
- - Twitch : https://www.twitch.tv/
+Data Sources:
 
-## User Guide
+YouTube: https://www.youtube.com/
+Twitch: https://www.twitch.tv/
 
-Voici les instructions à suivre afin de pouvoir faire fonctionner notre application.
+## Demo
 
-**Installation**
+## Demo ⚠️
 
- 1. Vous devez avoir la dernière version de Python installée sur votre machine. l'installation peut se faire [ici](https://www.python.org/downloads/).
- 2. Ensuite ouvrez votre terminal et clonez le projet :                             
- `git clone git@github.com:victger/Trend_YT_Twitch.git`
- 3. Enfin, installez toutes les librairies que l'on va utiliser qui se trouvent dans le document "requirements.txt" : 
- ```
-pip list --format=freeze > requirements.txt
+**Warning:** The demo provided here is **not run within Docker**. This is intentional because the web scraping process utilizes **ChromeDriver**, which, in a production environment (such as when using Docker), would typically be executed in **headless mode** on a Linux system. Headless mode allows ChromeDriver to run without displaying the browser, making it efficient but not visually informative.
+
+For the purpose of this demo, we have **disabled headless mode** so that users can observe the scraping process in real time. This means you will see the browser open, navigate through YouTube and Twitch, and collect the required data. We believe this is a more engaging way to demonstrate how the scraping works, as opposed to running the process silently in the background.
+
+In a **production environment**, scraping would occur in headless mode to improve performance, especially when running in a Docker container. However, **headless mode** hides the browser, making it impossible to visually track what the ChromeDriver is doing.
+
+[![Watch the demo on YouTube](https://img.youtube.com/vi/9tXtv_e9zHI/maxresdefault.jpg)](https://www.youtube.com/watch?v=9tXtv_e9zHI)
+
+### Key Components:
+1. **YouTube & Twitch Scraping**: Uses Selenium to scrape data from Twitch and YouTube based on game-related searches.
+2. **Elasticsearch Integration**: Stores the scraped data and enables advanced search capabilities.
+3. **Flask Web Application**: Provides a frontend interface with filters, autocompletion, and search features.
+4. **Dockerized Setup**: The entire application is containerized using Docker for ease of deployment and scalability.
+
+## Features
+
+- **Scraping**: Fetch data from Twitch and YouTube, including game names, video titles, channels, view counts, and upload dates.
+- **Data Cleaning**: Views and date fields are cleaned and normalized for consistency in the application.
+- **Elasticsearch**: Data is stored in an Elasticsearch index (`yt_twitch`) for fast querying and filtering.
+- **Autocomplete Suggestions**: Provides suggestions based on partial queries for better user experience.
+- **Flask Web Interface**: Displays the scraped data with search and filtering functionalities using a clean and responsive UI.
+
+## Technology Stack
+
+- **Backend**: 
+  - Python 3.12
+  - Flask
+  - Elasticsearch
+  - Selenium with ChromeDriver
+  
+- **Frontend**:
+  - HTML/CSS (for the Flask app templates)
+  
+- **Containers**: Docker for containerizing the application and Elasticsearch service.
+  
+- **Version Control**: Git for source code management.
+
+## Prerequisites
+
+Before setting up the project, ensure you have the following installed:
+
+1. Docker (latest version)
+2. Docker Compose (latest version)
+
+## Setup Instructions
+
+### 1. Clone the Repository
+
+```bash
+git clone <repository-url>
+cd <repository-directory>
 ```
+
+### 2. Build and Run with Docker
+
+To run the application using Docker, follow these steps:
+
+1. **Build Docker Containers**:
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   This will build both the `flask_app` and `elasticsearch` containers.
+
+2. **Access the Application**:
+   
+   Once the containers are running, you can access the Flask web app at:
+   ```
+   http://localhost:5000
+   ```
+
+3. **Elasticsearch**:
+   
+   Elasticsearch will be accessible at:
+   ```
+   http://localhost:9200
+   ```
+
+   You can verify if the service is running properly by visiting this URL.
+
+### 3. Setup on Local Machine (Optional)
+
+If you prefer to run the app without Docker and see the browser scraping in real-time, you can follow these steps:
+
+1. **Switch to the `demo` branch** of the repository:
+   
+   Go to this branch: https://github.com/victger/Gamewave/tree/demo
+
+2. **Install Python 3.12** and ensure that `pip` is installed on your machine.
+
+3. **Install Elasticsearch** (version 8.15.3 or a compatible version).
+
+4. **Install Dependencies**:
+
+   Run the following command to install all required Python dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. **Run the Application**:
+
+   Start the application by running:
+   ```bash
+   python main.py
+   ```
+
+By following these steps, you will be able to see the scraping process in the browser.
+
+## Project Structure
+
 ```
-python -m pip install -r requirements.txt 
+TREND_YT_TWITCH/
+├── app/
+│   ├── static/
+│   │   ├── css/
+│   │   │   └── style.css
+│   │   ├── js/
+│   │   │   ├── app.js
+│   │   │   └── datepicker.js
+│   ├── templates/
+│   │   └── index.html
+│   ├── elastic_utils.py
+│   ├── elastic.py
+│   └── flask_app.py
+├── chromedriver/
+│   └── ChromeDriver.py
+├── chromedriver-win64/
+│   ├── chromedriver.exe
+│   ├── LICENSE.chromedriver
+│   └── THIRD_PARTY_NOTICES.chromedriver
+├── images/
+│   └── youtube_card.png
+├── twitch/
+│   └── Twitch.py
+├── youtube/
+│   └── Youtube.py
+├── docker-compose.yml
+├── Dockerfile
+├── main.py
+├── README.md
+└── requirements.txt
+
 ```
 
-**Utilisation**
+## Environment Variables
 
-Avant tout, il est nécessaire (si ce n'est pas le cas) d'installer Docker sur sa machine et le conteneur Elastic Search. Une fois Docker installé, on lance le conteneur Elastic Search. On vérifie également que le port utilisé est bien le 9200. Si ce n'est pas le cas, on modifiera notre code à la ligne 156. 
+- `PYTHONUNBUFFERED`: Ensures the output is flushed immediately and not buffered, for real-time logs.
 
-Pour lancer l’application sur Windows taper l’instruction suivante depuis le terminal en vous plaçant à la racine du dossier téléchargé :
+## Elasticsearch
 
-```
-python main.py 
-```
+- **Index**: `yt_twitch`
+- **Elasticsearch Port**: `9200`
+  
+To interact with Elasticsearch directly, use the following endpoints:
+- `GET /yt_twitch/_search`: Retrieve data from the index.
+- `POST /yt_twitch/_bulk`: Insert bulk data into the index.
 
-Le scraping est alors lancé et vous pouvez observer en temps réel l'avancée dans le navigateur.
-Une fois cela fini, vous pouvez maintenant accéder à l'application sur  votre navigateur à l’adresse suivante : [http://127.0.0.1:5000](http://127.0.0.1:5000)
+## Search and Autocomplete
 
-Vous pouvez alors observer le résultat du scraping. Par défaut, toutes les vidéos et les informations qui lui sont associées sont affichées. Il est possible de :
-- Trier les informations selon le jeu vidéo
-- Chercher des mots parmi différents champs qui sont à cocher en cliquant ensuite sur "Chercher"
-- Accéder aux vidéos en cliquant sur le lien en question
+- **Search Filters**: You can filter by:
+  - `Game`
+  - `Video title`
+  - `Channel`
+  - `Date`
+  - `Tags`
+  
+- **Autocomplete**: As you type into the search fields, suggestions will appear based on existing data in the index.
 
-## Developper guide
+## License
 
- **Arbre du projet**
- ```  
-Trend_YT_Twitch 
+This project is licensed under the MIT License. See the LICENSE file for details.
 
-|-- static
-    |--style.css
-    
-|-- templates  
-    |--hello.html
-    |--app.js
-    
-|-- main.py
-|-- requirements.txt 
-|-- README.md 
-```
-**Fonctions des fichiers**
+## Troubleshooting
 
-  - **main.py** : 
+1. **Elasticsearch Fails to Start**:
+   - Check if the port `9200` is already in use by another service.
+   - Ensure Docker has sufficient memory allocated (recommended: at least 2GB).
+   
+2. **ChromeDriver Issues** (for a setup on Local Machine):
+   - Ensure you are using the correct version of ChromeDriver that matches your installed Google Chrome version.
+   - Make sure that the Chrome browser is properly installed inside the Docker container.
 
-Ce script Python utilise la bibliothèque Selenium pour automatiser la navigation sur le site Twitch, extraire des données de la page et les stocker dans un objet pandas DataFrame. 
+3. **Scraping Issues**:
+   - Ensure that Twitch and YouTube's page structure has not changed. If so, you may need to adjust the scraping logic.
 
-Le script commence par importer les bibliothèques nécessaires, notamment `selenium` pour la navigation Web, `pandas` pour la gestion de données, `time` pour ajouter une pause dans le script, et `ChromeDriverManager` pour installer et gérer le pilote Chrome.
- 
-Ensuite, le navigateur Chrome est initialisé avec `webdriver.Chrome()`. La méthode `get()` est utilisée pour naviguer vers la page Twitch triée par le nombre de spectateurs.
+## Future Improvements
 
-Le script itère ensuite sur chaque carte en utilisant une boucle `for` et extrait les caractéristiques des cartes à l'aide de la méthode `split()` pour les séparer en une liste de chaînes de caractères. Ces caractéristiques sont stockées dans trois listes différentes: "jeu" contenant le nom du jeu, "nb_spec" contenant le nombre de spectateurs et "tags" contenant les tags associés au jeu Twitch.
+- Improve the date picker
+- Implement machine learning models to analyze video trends and predict future popular games or videos.
+- Add pagination for large data sets.
+- Integrate user authentication for personalized search and data access.
 
-Enfin, le script utilise la méthode `pd.DataFrame()` pour créer un objet pandas DataFrame à partir de ces listes. Les colonnes du DataFrame sont nommées "Jeu", "Nombre de spectateurs" et "Tags". Enfin, la méthode `quit()` est utilisée pour fermer le navigateur.
-
-Le DataFrame final "data_twitch" contient donc toutes les informations extraites de la page Twitch triée par le nombre de spectateurs.
-
-Le deuxième script a pour objectif de récupérer les données de vidéos YouTube en rapport avec les jeux vidéo présents dans un dataframe "data_twitch". Pour cela, on utilise la bibliothèque Selenium pour automatiser l'interaction avec le navigateur web Google Chrome.
-Plus précisément, pour chaque jeu dans "data_twitch", le script va naviguer sur la page YouTube de recherche en utilisant le nom du jeu comme terme de recherche. 
-
-Ensuite, on clique sur la carte de jeu du jeu vidéo concerné.
-Une fois sur la page, on extrait les informations des 100 premières vidéos suggérées dans la section "Récentes" en récupérant les informations de chaque vidéo telles que le titre, la chaîne, le nombre de vues, la date de publication, les tags et le jeu associé. Ces informations sont stockées dans un dataframe "data_youtube". On fait cela pour tous les jeux vidéos présents dans la dataframe data_twitch.
-
-Par la suite, on rentre cette dataframe dans la base de données Elastic Search. On crée alors des requêtes afin que l'utilisateur puisse interagir avec nos données. On crée également des nouvelles pages pour effectuer nos requêtes.
-
-Nos requêtes fonctionnent par recherche de mots dans nos données selon plusieurs champs possibles et par recherche de jeu parmi les jeux scrapés. On notera que par défaut, toutes les données sont affichées.
-
- - **index.html** :
-
-Ce fichier HTML contient toutes les instructions HTML nécessaires à l'affichage de nos données. Le code est tout à fait basique mais contient quelques scripts et lignes de code Jinja2 expliquées. Vous pourrez trouver plus d'explications dans l'éditeur de texte.
-
- - **style.css** :
-
-Ce fichier CSS permet un rendu amélioré de l'interface de notre page HTML.
-
- - **app.js** : 
-
-Ce fichier Javascript est un template permettant une amélioration de l'affichage de nos données.
-
-## Voies d'amélioration
-
-On rappelle que l'objectif initial de ce projet est de proposer à l'utilisateur une expérience améliorée de l'onglet "Récentes" des jeux vidéos présents sur Youtube grâce à la présence de filtres affinant la recherche. Bien que nous avons pu récupérer toutes les informations concernant les jeux les plus populaires et réalisé quelques fonctionnalités sommaires de tri, nous ne sommes pas parvenus à offrir de nombreuses fonctionnalités. C'est pourquoi ce projet présente beaucoup d'intérêt à être amélioré. Les points suivants sont notamment à explorer :
-
-- Un filtrage par date
-- Un filtrage par nombre de vues
-- Une navigation plus intuitive, améliorée
-- Une interface plus jolie
-- Une interface responsive
-- Une analyse poussée des caractéristiques (mots fonctionnant le mieux par exemple)
-- La prise en compte de plus jeux vidéos et vidéos Youtube
-- Un site internet en temps réel disponible 24/24
-
-## Auteurs
-
-Zakary BELKACEM, Victor GERARD
+---
