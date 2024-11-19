@@ -29,6 +29,8 @@ For the purpose of this demo, we have **disabled headless mode** so that users c
 
 In a **production environment**, scraping would occur in headless mode to improve performance, especially when running in a Docker container. However, **headless mode** hides the browser, making it impossible to visually track what the ChromeDriver is doing.
 
+Click on the image to watch the video on Youtube :
+
 [![Watch the demo on YouTube](https://img.youtube.com/vi/9tXtv_e9zHI/maxresdefault.jpg)](https://www.youtube.com/watch?v=9tXtv_e9zHI)
 
 ### Key Components:
