@@ -1,4 +1,4 @@
-# Project README: YouTube & Twitch Scraping Application with Elasticsearch and Flask
+# YouTube & Twitch Scraping Application with Elasticsearch and Flask
 
 ## Overview
 
